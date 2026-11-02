@@ -7,6 +7,7 @@ export const ROUTES = {
   home: '/',
   login: '/giris',
   register: '/kayit',
+  panel: '/panel',
 } as const
 
 export const MAIN_NAV: NavItem[] = [

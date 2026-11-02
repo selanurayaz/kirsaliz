@@ -1,25 +1,88 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import { FormField } from '@/components/FormField'
+import { StatusMessage, type StatusState } from '@/components/StatusMessage'
+import { supabase } from '@/lib/supabase'
+import { translateAuthError } from '@/lib/auth-errors'
 import { ROUTES } from '@/lib/constants'
 
-type Status = { type: 'error' | 'info'; message: string } | null
+const MIN_PASSWORD_LENGTH = 8
 
 export function RegisterPage() {
-  const [status, setStatus] = useState<Status>(null)
+  const navigate = useNavigate()
+  const [status, setStatus] = useState<StatusState>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [completed, setCompleted] = useState(false)
 
-  // Kayıt işlemi (Supabase Auth) sonraki aşamada bağlanacak.
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const data = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const data = new FormData(form)
+    const fullName = String(data.get('fullName') ?? '').trim()
+    const email = String(data.get('email') ?? '').trim()
+    const phone = String(data.get('phone') ?? '').trim()
+    const password = String(data.get('password') ?? '')
+    const passwordConfirm = String(data.get('passwordConfirm') ?? '')
 
-    if (data.get('password') !== data.get('passwordConfirm')) {
-      setStatus({ type: 'error', message: 'Şifreler eşleşmiyor.' })
+    if (!fullName) {
+      setStatus({ type: 'error', message: 'Lütfen adınızı ve soyadınızı girin.' })
+      return
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setStatus({ type: 'error', message: `Şifre en az ${MIN_PASSWORD_LENGTH} karakter olmalıdır.` })
+      return
+    }
+    if (password !== passwordConfirm) {
+      setStatus({ type: 'error', message: 'Şifreler eşleşmiyor. Lütfen iki alana da aynı şifreyi girin.' })
       return
     }
 
-    setStatus({ type: 'info', message: 'Kayıt özelliği henüz aktif değil. Yakında kullanıma sunulacak.' })
+    setSubmitting(true)
+    setStatus(null)
+
+    try {
+      const { data: result, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            ...(phone ? { phone } : {}),
+          },
+          emailRedirectTo: `${window.location.origin}${ROUTES.login}`,
+        },
+      })
+
+      if (error) {
+        setStatus({ type: 'error', message: translateAuthError(error) })
+        return
+      }
+
+      if (!result.session) {
+        // E-posta zaten kayıtlıysa Supabase, hesabın varlığını gizlemek için boş "identities" döndürür.
+        if (result.user && result.user.identities?.length === 0) {
+          setStatus({ type: 'error', message: 'Bu e-posta adresiyle kayıtlı bir hesap zaten var.' })
+          return
+        }
+
+        // E-posta doğrulaması açık: oturum yok, kullanıcı gelen kutusunu kontrol etmeli.
+        form.reset()
+        setCompleted(true)
+        setStatus({
+          type: 'success',
+          message: `Kayıt başarılı! ${email} adresine bir doğrulama bağlantısı gönderdik. Hesabınızı etkinleştirmek için e-postanızı kontrol edin, ardından giriş yapın.`,
+        })
+        return
+      }
+
+      setStatus({ type: 'success', message: 'Kayıt başarılı. Panele yönlendiriliyorsunuz…' })
+      navigate(ROUTES.panel, { replace: true })
+    } catch (err) {
+      setStatus({ type: 'error', message: translateAuthError(err as Error) })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -35,47 +98,76 @@ export function RegisterPage() {
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <FormField id="fullName" label="Ad Soyad" type="text" autoComplete="name" placeholder="Adınız Soyadınız" required />
-        <FormField id="email" label="E-posta" type="email" autoComplete="email" placeholder="ornek@eposta.com" required />
-        <FormField id="phone" label="Telefon (isteğe bağlı)" type="tel" autoComplete="tel" placeholder="05xx xxx xx xx" />
-        <FormField
-          id="password"
-          label="Şifre"
-          type="password"
-          autoComplete="new-password"
-          placeholder="En az 8 karakter"
-          minLength={8}
-          required
-        />
-        <FormField
-          id="passwordConfirm"
-          label="Şifre (Tekrar)"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Şifrenizi tekrar girin"
-          minLength={8}
-          required
-        />
-
-        {status && (
-          <p
-            role={status.type === 'error' ? 'alert' : 'status'}
-            className={`rounded-md px-3 py-2 text-sm ${
-              status.type === 'error' ? 'bg-red-50 text-red-700' : 'bg-navy-50 text-navy-700'
-            }`}
+      {completed ? (
+        <div className="space-y-4">
+          <StatusMessage status={status} />
+          <Link
+            to={ROUTES.login}
+            className="block w-full rounded-md bg-navy-800 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-navy-700"
           >
-            {status.message}
-          </p>
-        )}
+            Giriş sayfasına git
+          </Link>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4" aria-busy={submitting}>
+          <FormField
+            id="fullName"
+            label="Ad Soyad"
+            type="text"
+            autoComplete="name"
+            placeholder="Adınız Soyadınız"
+            required
+            disabled={submitting}
+          />
+          <FormField
+            id="email"
+            label="E-posta"
+            type="email"
+            autoComplete="email"
+            placeholder="ornek@eposta.com"
+            required
+            disabled={submitting}
+          />
+          <FormField
+            id="phone"
+            label="Telefon (isteğe bağlı)"
+            type="tel"
+            autoComplete="tel"
+            placeholder="05xx xxx xx xx"
+            disabled={submitting}
+          />
+          <FormField
+            id="password"
+            label="Şifre"
+            type="password"
+            autoComplete="new-password"
+            placeholder="En az 8 karakter"
+            minLength={MIN_PASSWORD_LENGTH}
+            required
+            disabled={submitting}
+          />
+          <FormField
+            id="passwordConfirm"
+            label="Şifre (Tekrar)"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Şifrenizi tekrar girin"
+            minLength={MIN_PASSWORD_LENGTH}
+            required
+            disabled={submitting}
+          />
 
-        <button
-          type="submit"
-          className="w-full rounded-md bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
-        >
-          Kayıt Ol
-        </button>
-      </form>
+          <StatusMessage status={status} />
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-md bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? 'Kayıt oluşturuluyor…' : 'Kayıt Ol'}
+          </button>
+        </form>
+      )}
     </AuthLayout>
   )
 }

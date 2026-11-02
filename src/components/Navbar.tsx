@@ -1,11 +1,28 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router'
 import { Logo } from '@/components/Logo'
+import { useAuth } from '@/hooks/useAuth'
 import { MAIN_NAV, ROUTES } from '@/lib/constants'
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, loading, signOut } = useAuth()
+
+  async function handleSignOut() {
+    setSigningOut(true)
+    try {
+      await signOut()
+      setOpen(false)
+      navigate(ROUTES.home)
+    } catch {
+      // Çıkış başarısız olursa kullanıcı oturumda kalır; tekrar denenebilir.
+    } finally {
+      setSigningOut(false)
+    }
+  }
 
   // Sayfa veya bölüm değiştiğinde mobil menüyü kapat
   useEffect(() => {
@@ -31,22 +48,47 @@ export function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <NavLink
-            to={ROUTES.login}
-            className={({ isActive }) =>
-              `rounded-md px-4 py-2 text-sm font-semibold text-navy-800 transition-colors ${
-                isActive ? 'bg-navy-50' : 'hover:bg-slate-100'
-              }`
-            }
-          >
-            Giriş Yap
-          </NavLink>
-          <Link
-            to={ROUTES.register}
-            className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
-          >
-            Kayıt Ol
-          </Link>
+          {loading ? null : user ? (
+            <>
+              <NavLink
+                to={ROUTES.panel}
+                className={({ isActive }) =>
+                  `rounded-md px-4 py-2 text-sm font-semibold text-navy-800 transition-colors ${
+                    isActive ? 'bg-navy-50' : 'hover:bg-slate-100'
+                  }`
+                }
+              >
+                Panel
+              </NavLink>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                disabled={signingOut}
+                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Çıkış Yap
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to={ROUTES.login}
+                className={({ isActive }) =>
+                  `rounded-md px-4 py-2 text-sm font-semibold text-navy-800 transition-colors ${
+                    isActive ? 'bg-navy-50' : 'hover:bg-slate-100'
+                  }`
+                }
+              >
+                Giriş Yap
+              </NavLink>
+              <Link
+                to={ROUTES.register}
+                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
+              >
+                Kayıt Ol
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobil menü butonu */}
@@ -86,20 +128,43 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <div className="mt-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
-              <Link
-                to={ROUTES.login}
-                className="rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-navy-800 hover:bg-slate-50"
-              >
-                Giriş Yap
-              </Link>
-              <Link
-                to={ROUTES.register}
-                className="rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700"
-              >
-                Kayıt Ol
-              </Link>
-            </div>
+            {!loading && (
+              <div className="mt-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+                {user ? (
+                  <>
+                    <Link
+                      to={ROUTES.panel}
+                      className="rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-navy-800 hover:bg-slate-50"
+                    >
+                      Panel
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      disabled={signingOut}
+                      className="rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Çıkış Yap
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to={ROUTES.login}
+                      className="rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-navy-800 hover:bg-slate-50"
+                    >
+                      Giriş Yap
+                    </Link>
+                    <Link
+                      to={ROUTES.register}
+                      className="rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700"
+                    >
+                      Kayıt Ol
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
