@@ -1,6 +1,6 @@
 /**
  * Supabase veritabanı tipleri.
- * supabase/migrations/001_profiles.sql, 002_reference_data.sql ve 003_service_requests.sql ile senkron tutulmalıdır.
+ * supabase/migrations/001_profiles.sql, 002_reference_data.sql, 003_service_requests.sql ve 004_staff_workflow.sql ile senkron tutulmalıdır.
  * (İleride `supabase gen types typescript` ile otomatik üretilebilir.)
  */
 
@@ -141,6 +141,75 @@ export type ServiceRequestWithRelations = ServiceRequest & {
   department: Pick<Department, 'id' | 'name'> | null
   village: (Pick<Village, 'id' | 'name'> & { district: Pick<District, 'id' | 'name'> | null }) | null
 }
+
+/** Atanabilir saha personeli (get_available_field_personnel). */
+export type FieldPersonnelOption = {
+  id: string
+  full_name: string | null
+  department_id: string
+  is_active: boolean
+}
+
+/** Talebe bağlı kişi adları (get_staff_request_people). */
+export type StaffRequestPeople = {
+  request_id: string
+  citizen_name: string | null
+  assigned_name: string | null
+}
+
+/** Kurum paneli liste satırı. */
+export type StaffRequestListItem = ServiceRequestWithRelations & {
+  assigned_name: string | null
+  citizen_name: string | null
+}
+
+/** Kurum talep detayı. */
+export type StaffRequestDetail = StaffRequestListItem
+
+export type StaffRequestSummaryRow = { status: ServiceRequestStatus; total: number }
+
+/** Duruma göre sayılar ve toplam. */
+export type StaffRequestSummary = {
+  counts: Record<ServiceRequestStatus, number>
+  total: number
+}
+
+/** admin_list_users sonucu. */
+export type AdminUserListItem = {
+  id: string
+  email: string
+  full_name: string | null
+  phone: string | null
+  role: UserRole
+  department_id: string | null
+  department_name: string | null
+  village_id: string | null
+  is_active: boolean
+  created_at: string
+}
+
+/** admin_update_user_access parametreleri (arayüz tarafı). */
+export type AccessUpdatePayload = {
+  userId: string
+  role: UserRole
+  departmentId: string | null
+  isActive: boolean
+}
+
+export type ProfileAccessHistory = {
+  id: string
+  target_user_id: string | null
+  changed_by: string | null
+  old_role: UserRole
+  new_role: UserRole
+  old_department_id: string | null
+  new_department_id: string | null
+  old_is_active: boolean
+  new_is_active: boolean
+  created_at: string
+}
+
+type NoteArgs = { p_request_id: string; p_note?: string | null }
 
 export type Database = {
   public: {
@@ -311,10 +380,44 @@ export type Database = {
           },
         ]
       }
+      profile_access_history: {
+        Row: ProfileAccessHistory
+        Insert: never
+        Update: never
+        Relationships: []
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
+      review_service_request: { Args: NoteArgs; Returns: undefined }
+      start_service_request: { Args: NoteArgs; Returns: undefined }
+      resolve_service_request: { Args: { p_request_id: string; p_note: string }; Returns: undefined }
+      reject_service_request: { Args: { p_request_id: string; p_note: string }; Returns: undefined }
+      cancel_my_service_request: { Args: NoteArgs; Returns: undefined }
+      assign_service_request: {
+        Args: { p_request_id: string; p_field_personnel_id: string; p_note?: string | null }
+        Returns: undefined
+      }
+      get_available_field_personnel: {
+        Args: { p_department_id: string }
+        Returns: FieldPersonnelOption[]
+      }
+      get_staff_request_people: { Args: { p_request_ids: string[] }; Returns: StaffRequestPeople[] }
+      get_staff_request_summary: {
+        Args: { p_department_id?: string | null }
+        Returns: StaffRequestSummaryRow[]
+      }
+      admin_list_users: { Args: Record<PropertyKey, never>; Returns: AdminUserListItem[] }
+      admin_update_user_access: {
+        Args: {
+          p_user_id: string
+          p_role: UserRole
+          p_department_id: string | null
+          p_is_active: boolean
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       user_role: UserRole

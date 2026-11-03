@@ -39,3 +39,17 @@ export function toUserMessage(error: unknown, fallback: string): string {
   }
   return fallback
 }
+
+/**
+ * Veritabanı RPC hatalarını çevirir. Yalnızca KırsalİZ iş kuralı hataları
+ * ('KZ' ile başlayan özel kodlar) Türkçe mesajıyla gösterilir; diğer her şey genel mesaja döner.
+ */
+export function toWorkflowError(error: unknown, fallback: string): UserFacingError {
+  logError('RPC hatası', error)
+  const code = readField(error, 'code')
+  if (code.startsWith('KZ')) {
+    const message = readField(error, 'message')
+    if (message) return new UserFacingError(message)
+  }
+  return new UserFacingError(toUserMessage(error, fallback))
+}

@@ -3,14 +3,18 @@ import { Link, useLocation, useParams } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { FullPageSpinner } from '@/components/FullPageSpinner'
 import { StatusBadge, UrgencyBadge } from '@/components/StatusBadge'
-import { StatusMessage } from '@/components/StatusMessage'
+import { StatusMessage, type StatusState } from '@/components/StatusMessage'
 import { EmptyState } from '@/components/EmptyState'
+import { StatusTimeline } from '@/components/StatusTimeline'
+import { ImageGallery } from '@/components/ImageGallery'
+import { ConfirmationDialog } from '@/components/ConfirmationDialog'
+import { TextAreaField } from '@/components/TextAreaField'
 import { ROUTES } from '@/lib/constants'
 import { formatDateTime, formatLocation } from '@/lib/format'
-import { STATUS_LABELS } from '@/lib/service-request-config'
 import { toUserMessage } from '@/lib/errors'
 import {
   LOAD_REQUEST_DETAIL_ERROR,
+  cancelMyRequest,
   createSignedImageUrls,
   getMyServiceRequestById,
   getRequestAttachments,
@@ -52,6 +56,11 @@ export function RequestDetailPage() {
   const userId = user?.id
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [reloadKey, setReloadKey] = useState(0)
+  const [cancelOpen, setCancelOpen] = useState(false)
+  const [cancelNote, setCancelNote] = useState('')
+  const [cancelling, setCancelling] = useState(false)
+  const [cancelError, setCancelError] = useState<string | null>(null)
+  const [flash, setFlash] = useState<StatusState>(null)
 
   const created = isRequestCreatedState(location.state) ? location.state.created : null
 
@@ -88,6 +97,23 @@ export function RequestDetailPage() {
       active = false
     }
   }, [id, userId, reloadKey])
+
+  async function handleCancel() {
+    if (cancelling || state.kind !== 'ready') return
+    setCancelling(true)
+    setCancelError(null)
+    try {
+      await cancelMyRequest(state.request.id, cancelNote)
+      setCancelOpen(false)
+      setCancelNote('')
+      setFlash({ type: 'success', message: 'Talebiniz iptal edildi.' })
+      setReloadKey((k) => k + 1)
+    } catch (err) {
+      setCancelError(toUserMessage(err, 'Talep iptal edilemedi. Lütfen tekrar deneyin.'))
+    } finally {
+      setCancelling(false)
+    }
+  }
 
   const backLink = (
     <Link
@@ -140,11 +166,14 @@ export function RequestDetailPage() {
   }
 
   const { request, history, attachments, imageUrls, imageError } = state
+  const canCancel = request.status === 'submitted' || request.status === 'under_review'
 
   return (
     <section className="bg-slate-100 px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-3xl space-y-6">
         {backLink}
+
+        <StatusMessage status={flash} />
 
         {created && (
           <div role="status" className="rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900">
@@ -189,64 +218,52 @@ export function RequestDetailPage() {
             <Field label="Oluşturulma tarihi">{formatDateTime(request.created_at)}</Field>
             {request.resolved_at && <Field label="Çözüm tarihi">{formatDateTime(request.resolved_at)}</Field>}
           </dl>
+
+          {canCancel && (
+            <div className="mt-6 border-t border-slate-100 pt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setCancelError(null)
+                  setCancelOpen(true)
+                }}
+                className="rounded-md border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+              >
+                Talebi İptal Et
+              </button>
+              <p className="mt-2 text-xs text-slate-500">
+                Talep atanmadan veya işleme alınmadan önce iptal edebilirsiniz.
+              </p>
+            </div>
+          )}
         </article>
 
-        {attachments.length > 0 && (
-          <section aria-labelledby="fotograflar" className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-            <h2 id="fotograflar" className="text-lg font-semibold text-navy-800">
-              Fotoğraflar
-            </h2>
-            {imageError && (
-              <div className="mt-3">
-                <StatusMessage status={{ type: 'error', message: imageError }} />
-              </div>
-            )}
-            <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {attachments.map((attachment) => {
-                const url = imageUrls.get(attachment.storage_path)
-                return (
-                  <li key={attachment.id} className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
-                    {url ? (
-                      <a href={url} target="_blank" rel="noopener noreferrer" aria-label={`${attachment.original_name} fotoğrafını yeni sekmede aç`}>
-                        <img src={url} alt={attachment.original_name} loading="lazy" className="h-40 w-full object-cover" />
-                      </a>
-                    ) : (
-                      <div className="flex h-40 items-center justify-center px-3 text-center text-xs text-slate-500">
-                        Fotoğraf görüntülenemiyor
-                      </div>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
-        )}
-
-        <section aria-labelledby="gecmis" className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-          <h2 id="gecmis" className="text-lg font-semibold text-navy-800">
-            Durum Geçmişi
-          </h2>
-          {history.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">Henüz geçmiş kaydı yok.</p>
-          ) : (
-            <ol className="mt-4 border-l-2 border-slate-200">
-              {history.map((entry, index) => (
-                <li key={entry.id} className="relative pb-6 pl-6 last:pb-0">
-                  <span
-                    aria-hidden="true"
-                    className={`absolute top-1 -left-[7px] h-3 w-3 rounded-full border-2 border-white ring-2 ${
-                      index === history.length - 1 ? 'bg-brand-600 ring-brand-300' : 'bg-slate-400 ring-slate-200'
-                    }`}
-                  />
-                  <p className="text-sm font-semibold text-navy-800">{STATUS_LABELS[entry.status]}</p>
-                  <p className="text-xs text-slate-500">{formatDateTime(entry.created_at)}</p>
-                  {entry.note && <p className="mt-1 text-sm text-slate-600">{entry.note}</p>}
-                </li>
-              ))}
-            </ol>
-          )}
-        </section>
+        <ImageGallery attachments={attachments} imageUrls={imageUrls} error={imageError} />
+        <StatusTimeline history={history} />
       </div>
+
+      <ConfirmationDialog
+        open={cancelOpen}
+        title="Talebi iptal etmek istiyor musunuz?"
+        description="İptal edilen talep yeniden açılamaz. İsterseniz kısa bir açıklama ekleyebilirsiniz."
+        confirmLabel="Talebi İptal Et"
+        cancelLabel="Vazgeç"
+        tone="danger"
+        busy={cancelling}
+        onConfirm={() => void handleCancel()}
+        onCancel={() => setCancelOpen(false)}
+      >
+        <TextAreaField
+          id="iptal-notu"
+          label="Açıklama (isteğe bağlı)"
+          rows={3}
+          maxLength={600}
+          value={cancelNote}
+          onChange={(e) => setCancelNote(e.target.value)}
+          disabled={cancelling}
+        />
+        <StatusMessage status={cancelError ? { type: 'error', message: cancelError } : null} />
+      </ConfirmationDialog>
     </section>
   )
 }
