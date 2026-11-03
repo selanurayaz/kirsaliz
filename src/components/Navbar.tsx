@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router'
 import { Logo } from '@/components/Logo'
 import { useAuth } from '@/hooks/useAuth'
-import { MAIN_NAV, ROUTES } from '@/lib/constants'
+import { AUTH_NAV, MAIN_NAV, ROUTES } from '@/lib/constants'
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
@@ -36,7 +36,7 @@ export function Navbar() {
 
         {/* Masaüstü menü */}
         <div className="hidden items-center gap-8 md:flex">
-          {MAIN_NAV.map((item) => (
+          {(user ? [] : MAIN_NAV).map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -50,16 +50,20 @@ export function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           {loading ? null : user ? (
             <>
-              <NavLink
-                to={ROUTES.panel}
-                className={({ isActive }) =>
-                  `rounded-md px-4 py-2 text-sm font-semibold text-navy-800 transition-colors ${
-                    isActive ? 'bg-navy-50' : 'hover:bg-slate-100'
-                  }`
-                }
-              >
-                Panel
-              </NavLink>
+              {AUTH_NAV.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end
+                  className={({ isActive }) =>
+                    `rounded-md px-3 py-2 text-sm font-semibold text-navy-800 transition-colors ${
+                      isActive ? 'bg-navy-50' : 'hover:bg-slate-100'
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
               <button
                 type="button"
                 onClick={handleSignOut}
@@ -118,7 +122,7 @@ export function Navbar() {
       {open && (
         <div id="mobil-menu" className="border-t border-slate-200 bg-white md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 sm:px-6">
-            {MAIN_NAV.map((item) => (
+            {(user ? AUTH_NAV : MAIN_NAV).map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -129,24 +133,16 @@ export function Navbar() {
               </Link>
             ))}
             {!loading && (
-              <div className="mt-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+              <div className={`mt-2 border-t border-slate-100 pt-3 ${user ? '' : 'grid grid-cols-2 gap-2'}`}>
                 {user ? (
-                  <>
-                    <Link
-                      to={ROUTES.panel}
-                      className="rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-navy-800 hover:bg-slate-50"
-                    >
-                      Panel
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={handleSignOut}
-                      disabled={signingOut}
-                      className="rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      Çıkış Yap
-                    </button>
-                  </>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    disabled={signingOut}
+                    className="w-full rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    Çıkış Yap
+                  </button>
                 ) : (
                   <>
                     <Link

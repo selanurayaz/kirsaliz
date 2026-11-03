@@ -1,6 +1,6 @@
 /**
  * Supabase veritabanı tipleri.
- * supabase/migrations/001_profiles.sql ve 002_reference_data.sql ile senkron tutulmalıdır.
+ * supabase/migrations/001_profiles.sql, 002_reference_data.sql ve 003_service_requests.sql ile senkron tutulmalıdır.
  * (İleride `supabase gen types typescript` ile otomatik üretilebilir.)
  */
 
@@ -60,6 +60,86 @@ export type RequestCategory = {
   is_active: boolean
   created_at: string
   updated_at: string
+}
+
+export type ServiceRequestStatus =
+  | 'submitted'
+  | 'under_review'
+  | 'assigned'
+  | 'in_progress'
+  | 'resolved'
+  | 'rejected'
+  | 'cancelled'
+
+/** Vatandaşın kendi değerlendirmesi olan aciliyet düzeyi. */
+export type RequestUrgency = 'low' | 'normal' | 'high'
+
+export type ServiceRequest = {
+  id: string
+  tracking_code: string
+  citizen_id: string
+  village_id: string
+  category_id: string
+  department_id: string
+  assigned_to: string | null
+  title: string
+  description: string
+  address: string | null
+  latitude: number | null
+  longitude: number | null
+  urgency: RequestUrgency
+  status: ServiceRequestStatus
+  resolved_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+/**
+ * Tarayıcıdan gönderilebilen alanlar. citizen_id, department_id, status,
+ * assigned_to, resolved_at ve tracking_code veritabanı tarafından belirlenir.
+ */
+export type ServiceRequestInsert = {
+  village_id: string
+  category_id: string
+  title: string
+  description: string
+  address?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  urgency?: RequestUrgency
+}
+
+export type ServiceRequestHistory = {
+  id: string
+  request_id: string
+  status: ServiceRequestStatus
+  note: string | null
+  changed_by: string | null
+  created_at: string
+}
+
+export type ServiceRequestAttachment = {
+  id: string
+  request_id: string
+  owner_id: string
+  storage_path: string
+  original_name: string
+  mime_type: string
+  file_size: number
+  created_at: string
+}
+
+/** owner_id gönderilmez; veritabanı tetikleyicisi auth.uid() ile doldurur. */
+export type ServiceRequestAttachmentInsert = Pick<
+  ServiceRequestAttachment,
+  'request_id' | 'storage_path' | 'original_name' | 'mime_type' | 'file_size'
+>
+
+/** Liste ve detay sayfaları için ilişkili verilerle birleştirilmiş talep. */
+export type ServiceRequestWithRelations = ServiceRequest & {
+  category: Pick<RequestCategory, 'id' | 'name' | 'slug' | 'icon' | 'color'> | null
+  department: Pick<Department, 'id' | 'name'> | null
+  village: (Pick<Village, 'id' | 'name'> & { district: Pick<District, 'id' | 'name'> | null }) | null
 }
 
 export type Database = {
@@ -175,6 +255,62 @@ export type Database = {
           },
         ]
       }
+      service_requests: {
+        Row: ServiceRequest
+        Insert: ServiceRequestInsert
+        Update: Partial<Pick<ServiceRequest, 'status' | 'assigned_to'>>
+        Relationships: [
+          {
+            foreignKeyName: 'service_requests_village_id_fkey'
+            columns: ['village_id']
+            isOneToOne: false
+            referencedRelation: 'villages'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'service_requests_category_id_fkey'
+            columns: ['category_id']
+            isOneToOne: false
+            referencedRelation: 'request_categories'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'service_requests_department_id_fkey'
+            columns: ['department_id']
+            isOneToOne: false
+            referencedRelation: 'departments'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      service_request_history: {
+        Row: ServiceRequestHistory
+        Insert: never
+        Update: never
+        Relationships: [
+          {
+            foreignKeyName: 'service_request_history_request_id_fkey'
+            columns: ['request_id']
+            isOneToOne: false
+            referencedRelation: 'service_requests'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      service_request_attachments: {
+        Row: ServiceRequestAttachment
+        Insert: ServiceRequestAttachmentInsert
+        Update: never
+        Relationships: [
+          {
+            foreignKeyName: 'service_request_attachments_request_id_fkey'
+            columns: ['request_id']
+            isOneToOne: false
+            referencedRelation: 'service_requests'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
@@ -182,6 +318,8 @@ export type Database = {
     }
     Enums: {
       user_role: UserRole
+      service_request_status: ServiceRequestStatus
+      request_urgency: RequestUrgency
     }
     CompositeTypes: { [_ in never]: never }
   }
