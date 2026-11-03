@@ -84,9 +84,6 @@ interface RequestActionPanelProps {
   onDone: (message: string) => void
 }
 
-const BUTTON_BASE =
-  'rounded-md px-4 py-2 text-sm font-semibold shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60'
-
 export function RequestActionPanel({ request, role, userId, onDone }: RequestActionPanelProps) {
   const [active, setActive] = useState<ActionKind | null>(null)
   const [note, setNote] = useState('')
@@ -173,13 +170,13 @@ export function RequestActionPanel({ request, role, userId, onDone }: RequestAct
   }
 
   return (
-    <section aria-labelledby="islemler" className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-      <h2 id="islemler" className="text-lg font-semibold text-navy-800">
+    <section aria-labelledby="islemler" className="card p-5 sm:p-8">
+      <h2 id="islemler" className="text-lg font-semibold text-navy">
         İşlemler
       </h2>
 
       {!anyAction ? (
-        <p className="mt-3 text-sm text-slate-500">Bu talep için şu anda yapabileceğiniz bir işlem yok.</p>
+        <p className="mt-3 text-sm text-muted">Bu talep için şu anda yapabileceğiniz bir işlem yok.</p>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2">
           {canReview && (
@@ -187,7 +184,7 @@ export function RequestActionPanel({ request, role, userId, onDone }: RequestAct
               type="button"
               onClick={() => open('review')}
               disabled={busy}
-              className={`${BUTTON_BASE} bg-navy-800 text-white hover:bg-navy-700 focus-visible:ring-navy-500`}
+              className="btn btn-primary"
             >
               İncelemeye Al
             </button>
@@ -197,7 +194,7 @@ export function RequestActionPanel({ request, role, userId, onDone }: RequestAct
               type="button"
               onClick={() => open('assign')}
               disabled={busy}
-              className={`${BUTTON_BASE} bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500`}
+              className="btn btn-primary"
             >
               {reassigning ? 'Yeniden Ata' : 'Personele Ata'}
             </button>
@@ -207,7 +204,7 @@ export function RequestActionPanel({ request, role, userId, onDone }: RequestAct
               type="button"
               onClick={() => open('start')}
               disabled={busy}
-              className={`${BUTTON_BASE} bg-navy-800 text-white hover:bg-navy-700 focus-visible:ring-navy-500`}
+              className="btn btn-primary"
             >
               Çalışmaya Başla
             </button>
@@ -217,7 +214,7 @@ export function RequestActionPanel({ request, role, userId, onDone }: RequestAct
               type="button"
               onClick={() => open('resolve')}
               disabled={busy}
-              className={`${BUTTON_BASE} bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500`}
+              className="btn btn-primary"
             >
               Çözüldü Olarak İşaretle
             </button>
@@ -227,7 +224,7 @@ export function RequestActionPanel({ request, role, userId, onDone }: RequestAct
               type="button"
               onClick={() => open('reject')}
               disabled={busy}
-              className={`${BUTTON_BASE} border border-red-300 bg-white text-red-700 hover:bg-red-50 focus-visible:ring-red-400`}
+              className="btn btn-danger-outline"
             >
               Reddet
             </button>

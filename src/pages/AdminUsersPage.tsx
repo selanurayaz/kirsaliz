@@ -25,10 +25,10 @@ function ActiveBadge({ active }: { active: boolean }) {
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${
-        active ? 'bg-brand-50 text-brand-800 ring-brand-200' : 'bg-red-50 text-red-700 ring-red-200'
+        active ? 'bg-navy-50 text-navy ring-navy-200' : 'bg-destructive-soft text-destructive-hover ring-destructive-border'
       }`}
     >
-      {active ? 'Aktif' : 'Pasif'}
+      {active ? '● Aktif' : '○ Pasif'}
     </span>
   )
 }
@@ -120,11 +120,11 @@ export function AdminUsersPage() {
   }
 
   return (
-    <section className="bg-slate-100 px-4 py-8 sm:py-12">
+    <section className="bg-page px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-5xl space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-navy-800">Kullanıcı Yönetimi</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted">
             Kayıtlı kullanıcıların rol, birim ve hesap durumunu yönetin. Yeni personel önce normal kayıt olur, ardından
             buradan yetkilendirilir.
           </p>
@@ -135,19 +135,19 @@ export function AdminUsersPage() {
         {loading ? (
           <FullPageSpinner label="Kullanıcılar yükleniyor…" />
         ) : error ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="card p-6">
             <StatusMessage status={{ type: 'error', message: error }} />
             <button
               type="button"
               onClick={() => setReloadKey((k) => k + 1)}
-              className="mt-4 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
+              className="btn btn-primary mt-4"
             >
               Tekrar Dene
             </button>
           </div>
         ) : (
           <>
-            <div className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-3">
+            <div className="grid gap-3 card p-4 sm:grid-cols-3">
               <div className="space-y-1.5">
                 <label htmlFor="kullanici-arama" className="block text-sm font-medium text-navy-800">
                   Ad veya e-posta ara
@@ -157,7 +157,7 @@ export function AdminUsersPage() {
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className={`${FIELD_CLASS} border-slate-300`}
+                  className={`${FIELD_CLASS} border-line-strong`}
                 />
               </div>
               <div className="space-y-1.5">
@@ -168,7 +168,7 @@ export function AdminUsersPage() {
                   id="kullanici-rol-filtre"
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value as UserRole | 'all')}
-                  className={`${FIELD_CLASS} border-slate-300`}
+                  className={`${FIELD_CLASS} border-line-strong`}
                 >
                   <option value="all">Tüm roller</option>
                   {ROLE_FILTERS.map((r) => (
@@ -186,7 +186,7 @@ export function AdminUsersPage() {
                   id="kullanici-durum-filtre"
                   value={activeFilter}
                   onChange={(e) => setActiveFilter(e.target.value as 'all' | 'active' | 'inactive')}
-                  className={`${FIELD_CLASS} border-slate-300`}
+                  className={`${FIELD_CLASS} border-line-strong`}
                 >
                   <option value="all">Tümü</option>
                   <option value="active">Aktif</option>
@@ -195,7 +195,7 @@ export function AdminUsersPage() {
               </div>
             </div>
 
-            <p className="text-sm text-slate-500" role="status">
+            <p className="text-sm text-muted" role="status">
               {filtered.length} kullanıcı gösteriliyor
             </p>
 
@@ -206,12 +206,12 @@ export function AdminUsersPage() {
                 {filtered.map((u) => {
                   const isSelf = u.id === currentUser?.id
                   return (
-                    <li key={u.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                    <li key={u.id} className="card p-4 sm:p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="font-semibold break-words text-navy-900">
                             {u.full_name?.trim() || 'Adsız kullanıcı'}
-                            {isSelf && <span className="ml-2 text-xs font-medium text-slate-500">(Siz)</span>}
+                            {isSelf && <span className="ml-2 text-xs font-medium text-muted">(Siz)</span>}
                           </p>
                           <p className="text-sm break-all text-slate-600">{u.email}</p>
                         </div>
@@ -222,17 +222,17 @@ export function AdminUsersPage() {
                       </div>
                       <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm text-slate-600 sm:grid-cols-3">
                         <div>
-                          <dt className="text-xs text-slate-400">Birim</dt>
+                          <dt className="text-xs text-muted">Birim</dt>
                           <dd>{u.department_name ?? '—'}</dd>
                         </div>
                         <div>
-                          <dt className="text-xs text-slate-400">Kayıt tarihi</dt>
+                          <dt className="text-xs text-muted">Kayıt tarihi</dt>
                           <dd>{formatDate(u.created_at)}</dd>
                         </div>
                       </dl>
                       <div className="mt-3">
                         {isSelf ? (
-                          <p className="text-xs text-slate-500">Kendi rolünüzü ve hesap durumunuzu değiştiremezsiniz.</p>
+                          <p className="text-xs text-muted">Kendi rolünüzü ve hesap durumunuzu değiştiremezsiniz.</p>
                         ) : (
                           <button
                             type="button"
@@ -242,7 +242,7 @@ export function AdminUsersPage() {
                               setEditing(u)
                             }}
                             aria-label={`${u.full_name?.trim() || u.email} kullanıcısının erişimini düzenle`}
-                            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-navy-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+                            className="btn btn-neutral btn-sm"
                           >
                             Düzenle
                           </button>
@@ -255,18 +255,18 @@ export function AdminUsersPage() {
             )}
 
             {history.length > 0 && (
-              <section aria-labelledby="erisim-gecmisi" className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <section aria-labelledby="erisim-gecmisi" className="card p-5">
                 <h2 id="erisim-gecmisi" className="text-lg font-semibold text-navy-800">
                   Son Erişim Değişiklikleri
                 </h2>
-                <ul className="mt-3 divide-y divide-slate-100 text-sm">
+                <ul className="mt-3 divide-y divide-line text-sm">
                   {history.map((h) => (
                     <li key={h.id} className="py-2 text-slate-700">
                       <span className="font-medium">{userLabel(h.target_user_id)}</span>:{' '}
                       {ROLE_LABELS[h.old_role]} → {ROLE_LABELS[h.new_role]}
                       {h.new_department_id && ` (${departmentNames.get(h.new_department_id) ?? 'Birim'})`}
                       {h.old_is_active !== h.new_is_active && (h.new_is_active ? ' · Aktifleştirildi' : ' · Pasifleştirildi')}
-                      <span className="block text-xs text-slate-400">
+                      <span className="block text-xs text-muted">
                         {userLabel(h.changed_by)} · {formatDateTime(h.created_at)}
                       </span>
                     </li>

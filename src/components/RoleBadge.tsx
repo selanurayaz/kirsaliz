@@ -2,10 +2,10 @@ import { ROLE_LABELS } from '@/lib/constants'
 import type { UserRole } from '@/types/database'
 
 const STYLES: Record<UserRole, string> = {
-  citizen: 'bg-slate-100 text-slate-700 ring-slate-200',
-  field_personnel: 'bg-amber-50 text-amber-800 ring-amber-200',
+  citizen: 'bg-page text-slate-700 ring-line-strong',
+  field_personnel: 'bg-navy-100 text-navy ring-navy-300',
   department_officer: 'bg-navy-50 text-navy-700 ring-navy-200',
-  admin: 'bg-brand-50 text-brand-800 ring-brand-200',
+  admin: 'bg-primary text-white ring-primary-hover',
 }
 
 export function RoleBadge({ role }: { role: UserRole }) {

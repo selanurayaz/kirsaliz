@@ -43,7 +43,7 @@ export function LoginPage() {
       footer={
         <>
           Hesabınız yok mu?{' '}
-          <Link to={ROUTES.register} className="font-semibold text-brand-700 hover:text-brand-800">
+          <Link to={ROUTES.register} className="font-semibold text-primary underline underline-offset-2 hover:text-primary-dark">
             Kayıt olun
           </Link>
         </>
@@ -74,7 +74,7 @@ export function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-navy-800 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-navy-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn btn-primary w-full"
         >
           {submitting ? 'Giriş yapılıyor…' : 'Giriş Yap'}
         </button>

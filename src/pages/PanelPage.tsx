@@ -8,13 +8,11 @@ import { FullPageSpinner } from '@/components/FullPageSpinner'
 import { StatusMessage } from '@/components/StatusMessage'
 import { ROUTES } from '@/lib/constants'
 
-const PRIMARY_LINK =
-  'rounded-md bg-brand-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none'
 
 function SummaryCard({ label, value, accent }: { label: string; value: number; accent: string }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <dt className="text-xs font-medium text-slate-500">{label}</dt>
+    <div className="card border-l-4 border-l-primary p-4">
+      <dt className="text-xs font-semibold text-muted">{label}</dt>
       <dd className={`mt-1 text-3xl font-bold ${accent}`}>{value}</dd>
     </div>
   )
@@ -46,19 +44,19 @@ function CitizenPanel() {
   )
 
   return (
-    <section className="bg-slate-100 px-4 py-8 sm:py-12">
+    <section className="px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-4xl space-y-8">
-        <div className="rounded-xl bg-navy-800 p-6 text-white shadow-sm sm:p-8">
-          <p className="text-sm text-navy-200">Hoş geldiniz</p>
+        <div className="rounded-xl border-b-4 border-primary bg-primary-dark p-6 text-white shadow-sm sm:p-8">
+          <p className="text-sm text-primary-border">Hoş geldiniz</p>
           <h1 className="mt-1 text-2xl font-bold break-words sm:text-3xl">{displayName}</h1>
-          <p className="mt-2 text-sm text-navy-100">Köyünüzdeki sorunları bildirin, taleplerinizin durumunu izleyin.</p>
+          <p className="mt-2 text-sm text-primary-soft">Köyünüzdeki sorunları bildirin, taleplerinizin durumunu izleyin.</p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Link to={ROUTES.newRequest} className={PRIMARY_LINK}>
+            <Link to={ROUTES.newRequest} className="btn bg-white text-primary-dark hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary-dark">
               Yeni Talep Oluştur
             </Link>
             <Link
               to={ROUTES.myRequests}
-              className="rounded-md border border-white/30 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+              className="btn border-white/40 text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-primary-dark"
             >
               Taleplerim
             </Link>
@@ -68,12 +66,12 @@ function CitizenPanel() {
         {loading ? (
           <FullPageSpinner label="Talepleriniz yükleniyor…" />
         ) : error ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="card p-6">
             <StatusMessage status={{ type: 'error', message: error }} />
             <button
               type="button"
               onClick={reload}
-              className="mt-4 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
+              className="btn btn-primary mt-4"
             >
               Tekrar Dene
             </button>
@@ -81,17 +79,17 @@ function CitizenPanel() {
         ) : (
           <>
             <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Talep özeti">
-              <SummaryCard label="Toplam talep" value={summary.total} accent="text-navy-800" />
-              <SummaryCard label="Alındı / İnceleniyor" value={summary.pending} accent="text-slate-700" />
-              <SummaryCard label="İşlemde" value={summary.inProgress} accent="text-amber-700" />
-              <SummaryCard label="Çözüldü" value={summary.resolved} accent="text-brand-700" />
+              <SummaryCard label="Toplam talep" value={summary.total} accent="text-navy" />
+              <SummaryCard label="Alındı / İnceleniyor" value={summary.pending} accent="text-navy-soft" />
+              <SummaryCard label="İşlemde" value={summary.inProgress} accent="text-primary" />
+              <SummaryCard label="Çözüldü" value={summary.resolved} accent="text-primary-dark" />
             </dl>
 
             <div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-navy-800">Son Talepler</h2>
                 {requests.length > 0 && (
-                  <Link to={ROUTES.myRequests} className="text-sm font-semibold text-brand-700 hover:text-brand-800">
+                  <Link to={ROUTES.myRequests} className="text-sm font-semibold text-primary hover:text-primary-dark">
                     Tümünü gör
                   </Link>
                 )}
@@ -102,7 +100,7 @@ function CitizenPanel() {
                     title="Henüz bir talebiniz yok"
                     description="Köyünüzdeki bir sorunu bildirmek için ilk talebinizi oluşturun."
                     action={
-                      <Link to={ROUTES.newRequest} className={PRIMARY_LINK}>
+                      <Link to={ROUTES.newRequest} className="btn bg-white text-primary-dark hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary-dark">
                         Yeni Talep Oluştur
                       </Link>
                     }

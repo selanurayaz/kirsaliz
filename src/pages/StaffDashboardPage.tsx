@@ -45,9 +45,9 @@ const DESCRIPTIONS = {
 
 function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <dt className="text-xs font-medium text-slate-500">{label}</dt>
-      <dd className="mt-1 text-2xl font-bold text-navy-800">{value}</dd>
+    <div className="card border-l-4 border-l-primary p-4">
+      <dt className="text-xs font-medium text-muted">{label}</dt>
+      <dd className="mt-1 text-3xl font-bold text-navy">{value}</dd>
     </div>
   )
 }
@@ -152,11 +152,11 @@ export function StaffDashboardPage() {
   }
 
   return (
-    <section className="bg-slate-100 px-4 py-8 sm:py-12">
+    <section className="bg-page px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-5xl space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-navy-800">{TITLES[role]}</h1>
-          <p className="mt-1 text-sm text-slate-500">{DESCRIPTIONS[role]}</p>
+          <p className="mt-1 text-sm text-muted">{DESCRIPTIONS[role]}</p>
         </div>
 
         {showOfficerWarning && (
@@ -181,7 +181,7 @@ export function StaffDashboardPage() {
 
         <div
           id="talepler"
-          className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4"
+          className="grid gap-3 card p-4 sm:grid-cols-2 lg:grid-cols-4"
         >
           <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
             <label htmlFor="kurum-arama" className="block text-sm font-medium text-navy-800">
@@ -193,7 +193,7 @@ export function StaffDashboardPage() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Takip kodu veya başlık"
-              className={`${FIELD_CLASS} border-slate-300`}
+              className={`${FIELD_CLASS} border-line-strong`}
             />
           </div>
           <div className="space-y-1.5">
@@ -207,7 +207,7 @@ export function StaffDashboardPage() {
                 setStatus(e.target.value as ServiceRequestStatus | 'all')
                 setPageIndex(0)
               }}
-              className={`${FIELD_CLASS} border-slate-300`}
+              className={`${FIELD_CLASS} border-line-strong`}
             >
               <option value="all">Tüm durumlar</option>
               {STATUS_ORDER.map((s) => (
@@ -228,7 +228,7 @@ export function StaffDashboardPage() {
                 setUrgency(e.target.value as RequestUrgency | 'all')
                 setPageIndex(0)
               }}
-              className={`${FIELD_CLASS} border-slate-300`}
+              className={`${FIELD_CLASS} border-line-strong`}
             >
               <option value="all">Tüm düzeyler</option>
               {URGENCY_ORDER.map((u) => (
@@ -250,7 +250,7 @@ export function StaffDashboardPage() {
                   setDepartmentId(e.target.value)
                   setPageIndex(0)
                 }}
-                className={`${FIELD_CLASS} border-slate-300`}
+                className={`${FIELD_CLASS} border-line-strong`}
               >
                 <option value="all">Tüm birimler</option>
                 {departments.map((d) => (
@@ -266,12 +266,12 @@ export function StaffDashboardPage() {
         {loading && !result ? (
           <FullPageSpinner label="Talepler yükleniyor…" />
         ) : error ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="card p-6">
             <StatusMessage status={{ type: 'error', message: error }} />
             <button
               type="button"
               onClick={() => setReloadKey((k) => k + 1)}
-              className="mt-4 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
+              className="btn btn-primary mt-4"
             >
               Tekrar Dene
             </button>
@@ -291,7 +291,7 @@ export function StaffDashboardPage() {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-slate-50"
+                  className="btn btn-neutral"
                 >
                   Filtreleri Temizle
                 </button>
@@ -300,7 +300,7 @@ export function StaffDashboardPage() {
           />
         ) : (
           <div aria-busy={loading}>
-            <p className="text-sm text-slate-500" role="status">
+            <p className="text-sm text-muted" role="status">
               {total} talep bulundu · Sayfa {pageIndex + 1}/{pageCount}
             </p>
             <ul className={`mt-3 space-y-3 ${loading ? 'opacity-60' : ''}`}>
@@ -317,18 +317,18 @@ export function StaffDashboardPage() {
                   type="button"
                   onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
                   disabled={pageIndex === 0 || loading}
-                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn btn-neutral"
                 >
                   ← Önceki
                 </button>
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-muted">
                   {pageIndex + 1} / {pageCount}
                 </span>
                 <button
                   type="button"
                   onClick={() => setPageIndex((p) => Math.min(pageCount - 1, p + 1))}
                   disabled={pageIndex >= pageCount - 1 || loading}
-                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn btn-neutral"
                 >
                   Sonraki →
                 </button>

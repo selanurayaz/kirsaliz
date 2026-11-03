@@ -6,11 +6,13 @@ interface LogoProps {
 }
 
 export function Logo({ variant = 'dark' }: LogoProps) {
-  const textColor = variant === 'light' ? 'text-white' : 'text-navy-800'
+  const textColor = variant === 'light' ? 'text-white' : 'text-navy'
+  const accentColor = variant === 'light' ? 'text-primary-border' : 'text-primary'
+  const markColor = variant === 'light' ? 'bg-white/10 text-primary-border ring-1 ring-white/20' : 'bg-navy text-primary-border'
 
   return (
-    <Link to={ROUTES.home} className="flex items-center gap-2" aria-label={`${APP_NAME} ana sayfa`}>
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-navy-800 text-brand-500">
+    <Link to={ROUTES.home} className="flex items-center gap-2 rounded-md focus-visible:outline-2" aria-label={`${APP_NAME} ana sayfa`}>
+      <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${markColor}`}>
         <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
           <path
             fill="currentColor"
@@ -19,7 +21,7 @@ export function Logo({ variant = 'dark' }: LogoProps) {
         </svg>
       </span>
       <span className={`text-xl font-bold tracking-tight ${textColor}`}>
-        Kırsal<span className="text-brand-500">İZ</span>
+        Kırsal<span className={accentColor}>İZ</span>
       </span>
     </Link>
   )

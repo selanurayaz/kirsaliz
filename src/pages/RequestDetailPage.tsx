@@ -43,7 +43,7 @@ type LoadState =
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium tracking-wide text-slate-500 uppercase">{label}</dt>
+      <dt className="text-xs font-medium tracking-wide text-muted uppercase">{label}</dt>
       <dd className="mt-0.5 text-sm break-words text-navy-900">{children}</dd>
     </div>
   )
@@ -118,7 +118,7 @@ export function RequestDetailPage() {
   const backLink = (
     <Link
       to={ROUTES.myRequests}
-      className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+      className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
     >
       ← Taleplerim
     </Link>
@@ -128,14 +128,14 @@ export function RequestDetailPage() {
 
   if (state.kind === 'not-found') {
     return (
-      <section className="bg-slate-100 px-4 py-8 sm:py-12">
+      <section className="bg-page px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-3xl space-y-4">
           {backLink}
           <EmptyState
             title="Talep bulunamadı"
             description="Aradığınız talep mevcut değil veya görüntüleme yetkiniz yok."
             action={
-              <Link to={ROUTES.myRequests} className="rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700">
+              <Link to={ROUTES.myRequests} className="btn btn-primary">
                 Taleplerime Dön
               </Link>
             }
@@ -147,15 +147,15 @@ export function RequestDetailPage() {
 
   if (state.kind === 'error') {
     return (
-      <section className="bg-slate-100 px-4 py-8 sm:py-12">
+      <section className="bg-page px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-3xl space-y-4">
           {backLink}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="card p-6">
             <StatusMessage status={{ type: 'error', message: state.message }} />
             <button
               type="button"
               onClick={() => setReloadKey((k) => k + 1)}
-              className="mt-4 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
+              className="btn btn-primary mt-4"
             >
               Tekrar Dene
             </button>
@@ -169,29 +169,29 @@ export function RequestDetailPage() {
   const canCancel = request.status === 'submitted' || request.status === 'under_review'
 
   return (
-    <section className="bg-slate-100 px-4 py-8 sm:py-12">
+    <section className="bg-page px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-3xl space-y-6">
         {backLink}
 
         <StatusMessage status={flash} />
 
         {created && (
-          <div role="status" className="rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900">
+          <div role="status" className="rounded-xl border border-primary-border bg-primary-soft p-4 text-sm text-primary-dark">
             <p className="font-semibold">Talebiniz alındı.</p>
             <p className="mt-1">
               Takip kodunuz: <span className="font-mono font-bold">{created.trackingCode}</span>
             </p>
             {created.failedUploads > 0 && (
-              <p className="mt-2 text-amber-800">
+              <p className="mt-2 text-warning">
                 {created.failedUploads} fotoğraf yüklenemedi. Talebiniz fotoğrafsız olarak kaydedildi.
               </p>
             )}
           </div>
         )}
 
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <article className="card p-5 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-mono text-sm font-semibold tracking-wide text-slate-500">{request.tracking_code}</p>
+            <p className="font-mono text-sm font-semibold tracking-wide text-muted">{request.tracking_code}</p>
             <div className="flex flex-wrap gap-1.5">
               <StatusBadge status={request.status} />
               <UrgencyBadge urgency={request.urgency} />
@@ -201,7 +201,7 @@ export function RequestDetailPage() {
           <h1 className="mt-3 text-2xl font-bold break-words text-navy-800">{request.title}</h1>
           <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-700">{request.description}</p>
 
-          <dl className="mt-6 grid gap-4 border-t border-slate-100 pt-6 sm:grid-cols-2">
+          <dl className="mt-6 grid gap-4 border-t border-line pt-6 sm:grid-cols-2">
             <Field label="Kategori">{request.category?.name ?? '—'}</Field>
             <Field label="Sorumlu birim">{request.department?.name ?? '—'}</Field>
             <Field label="İlçe / Köy">
@@ -220,18 +220,18 @@ export function RequestDetailPage() {
           </dl>
 
           {canCancel && (
-            <div className="mt-6 border-t border-slate-100 pt-6">
+            <div className="mt-6 border-t border-line pt-6">
               <button
                 type="button"
                 onClick={() => {
                   setCancelError(null)
                   setCancelOpen(true)
                 }}
-                className="rounded-md border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+                className="btn btn-danger-outline"
               >
                 Talebi İptal Et
               </button>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-muted">
                 Talep atanmadan veya işleme alınmadan önce iptal edebilirsiniz.
               </p>
             </div>

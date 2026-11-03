@@ -11,7 +11,7 @@ interface TextAreaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement>
 export function TextAreaField({ id, label, error, hint, className = '', ...props }: TextAreaFieldProps) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-navy-800">
+      <label htmlFor={id} className="field-label">
         {label}
       </label>
       <textarea
@@ -19,16 +19,16 @@ export function TextAreaField({ id, label, error, hint, className = '', ...props
         name={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
-        className={`${FIELD_CLASS} ${error ? 'border-red-400' : 'border-slate-300'} ${className}`}
+        className={`${FIELD_CLASS} ${error ? 'border-destructive' : ''} ${className}`}
         {...props}
       />
       {hint && !error && (
-        <p id={`${id}-hint`} className="text-xs text-slate-500">
+        <p id={`${id}-hint`} className="text-xs text-muted">
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="text-xs text-red-600">
+        <p id={`${id}-error`} className="text-xs text-destructive">
           {error}
         </p>
       )}

@@ -37,16 +37,16 @@ export function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-navy-800 text-white">
+      <section className="border-b-4 border-navy bg-primary-dark text-white">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2">
           <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 rounded-full bg-brand-500/15 px-3 py-1 text-xs font-semibold tracking-wide text-brand-300 uppercase">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-primary-soft uppercase ring-1 ring-white/20 ring-inset">
               Kırsal Hizmet Platformu
             </span>
             <h1 className="text-3xl leading-tight font-bold sm:text-4xl lg:text-5xl">
-              Köyünüzdeki sorunları <span className="text-brand-400">tek tıkla</span> bildirin, süreci şeffafça takip edin.
+              Köyünüzdeki sorunları <span className="text-primary-border">tek tıkla</span> bildirin, süreci şeffafça takip edin.
             </h1>
-            <p className="max-w-xl text-base text-navy-100 sm:text-lg">
+            <p className="max-w-xl text-base text-primary-soft sm:text-lg">
               KırsalİZ; kırsal bölgelerdeki altyapı sorunlarının vatandaşlar tarafından bildirilmesini, kurumlar
               tarafından değerlendirilmesini ve saha ekiplerine yönlendirilmesini sağlayan konum tabanlı bir hizmet ve
               karar destek platformudur.
@@ -54,13 +54,13 @@ export function HomePage() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 to={ROUTES.register}
-                className="rounded-md bg-brand-500 px-6 py-3 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-600"
+                className="btn bg-white px-6 py-3 text-primary-dark shadow-sm hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary-dark"
               >
                 Hemen Kayıt Ol
               </Link>
               <Link
                 to={ROUTES.login}
-                className="rounded-md border border-navy-400 px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-navy-700"
+                className="btn border-white/40 px-6 py-3 text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-primary-dark"
               >
                 Giriş Yap
               </Link>
@@ -68,10 +68,10 @@ export function HomePage() {
           </div>
 
           <div className="hidden lg:block">
-            <div className="rounded-2xl border border-navy-600 bg-navy-700/60 p-6 shadow-xl">
+            <div className="rounded-xl border border-white/15 bg-white/5 p-6 shadow-xl">
               <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm font-semibold text-navy-100">Örnek Bildirim</p>
-                <span className="rounded-full bg-brand-500/20 px-2.5 py-0.5 text-xs font-semibold text-brand-300">
+                <p className="text-sm font-semibold text-primary-soft">Örnek Bildirim</p>
+                <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white ring-1 ring-white/20 ring-inset">
                   İnceleniyor
                 </span>
               </div>
@@ -82,8 +82,8 @@ export function HomePage() {
                   ['Etkilenen Kişi', '~120'],
                   ['Öncelik', 'Yüksek'],
                 ].map(([k, v]) => (
-                  <div key={k} className="flex justify-between border-b border-navy-600 pb-2 last:border-0">
-                    <dt className="text-navy-200">{k}</dt>
+                  <div key={k} className="flex justify-between border-b border-white/15 pb-2 last:border-0">
+                    <dt className="text-primary-border">{k}</dt>
                     <dd className="font-medium text-white">{v}</dd>
                   </div>
                 ))}
@@ -104,8 +104,8 @@ export function HomePage() {
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {features.map((f) => (
-              <div key={f.title} className="rounded-xl border border-slate-200 bg-slate-50 p-6">
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
+              <div key={f.title} className="card p-6">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary-soft text-primary ring-1 ring-primary-border">
                   <svg
                     viewBox="0 0 24 24"
                     className="h-6 w-6"
@@ -128,13 +128,13 @@ export function HomePage() {
       </section>
 
       {/* Nasıl Çalışır */}
-      <section id="nasil-calisir" className="bg-slate-100 py-16 sm:py-20">
+      <section id="nasil-calisir" className="bg-page py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="mb-12 text-center text-2xl font-bold text-navy-800 sm:text-3xl">Nasıl Çalışır?</h2>
           <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
-              <li key={s.title} className="rounded-xl bg-white p-6 shadow-sm">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-sm font-bold text-white">
+              <li key={s.title} className="card border-t-4 border-t-primary p-6">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
                   {i + 1}
                 </span>
                 <h3 className="mt-4 font-semibold text-navy-800">{s.title}</h3>
@@ -158,7 +158,7 @@ export function HomePage() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {roles.map((r) => (
-              <div key={r.title} className="rounded-lg border-l-4 border-brand-500 bg-slate-50 p-4">
+              <div key={r.title} className="rounded-lg border-l-4 border-primary bg-primary-soft p-4">
                 <h3 className="font-semibold text-navy-800">{r.title}</h3>
                 <p className="mt-1 text-sm text-slate-600">{r.description}</p>
               </div>
@@ -168,15 +168,15 @@ export function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-brand-700">
+      <section className="bg-primary">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-12 text-center sm:px-6 md:flex-row md:justify-between md:text-left">
           <div>
             <h2 className="text-xl font-bold text-white sm:text-2xl">Köyünüz için bir adım atın.</h2>
-            <p className="mt-1 text-brand-100">Ücretsiz hesap oluşturun ve ilk bildiriminizi yapın.</p>
+            <p className="mt-1 text-primary-soft">Ücretsiz hesap oluşturun ve ilk bildiriminizi yapın.</p>
           </div>
           <Link
             to={ROUTES.register}
-            className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-brand-800 shadow-sm transition-colors hover:bg-brand-50"
+            className="btn bg-white px-6 py-3 text-primary-dark shadow-sm hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary"
           >
             Kayıt Ol
           </Link>

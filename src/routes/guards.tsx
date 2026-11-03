@@ -37,15 +37,15 @@ export function RoleRoute({ allowed }: { allowed: readonly UserRole[] }) {
 export function UnauthorizedPage() {
   const { role } = useAuth()
   return (
-    <section className="bg-slate-100 px-4 py-16">
-      <div className="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+    <section className="bg-page px-4 py-16">
+      <div className="mx-auto max-w-md rounded-xl border border-line bg-white p-8 text-center shadow-sm">
         <h1 className="text-xl font-bold text-navy-800">Bu sayfaya erişim yetkiniz yok</h1>
         <p className="mt-2 text-sm text-slate-600">
           Görüntülemeye çalıştığınız sayfa hesabınızın rolüne açık değil.
         </p>
         <Link
           to={homeRouteForRole(role)}
-          className="mt-6 inline-block rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+          className="btn btn-primary mt-6"
         >
           Ana Sayfama Dön
         </Link>
@@ -70,8 +70,8 @@ function InactiveAccount() {
   }
 
   return (
-    <section className="bg-slate-100 px-4 py-16">
-      <div role="alert" className="mx-auto max-w-md rounded-xl border border-red-200 bg-white p-8 text-center shadow-sm">
+    <section className="bg-page px-4 py-16">
+      <div role="alert" className="mx-auto max-w-md rounded-xl border border-destructive-border bg-white p-8 text-center shadow-sm">
         <h1 className="text-xl font-bold text-navy-800">Hesabınız pasif durumda</h1>
         <p className="mt-2 text-sm text-slate-600">
           Hesabınız şu anda kullanıma kapalı. Bir hata olduğunu düşünüyorsanız sistem yöneticisiyle iletişime geçin.
@@ -80,7 +80,7 @@ function InactiveAccount() {
           type="button"
           onClick={() => void handleSignOut()}
           disabled={busy}
-          className="mt-6 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none disabled:opacity-60"
+          className="btn btn-primary mt-6"
         >
           Çıkış Yap
         </button>

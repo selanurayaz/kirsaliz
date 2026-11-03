@@ -16,8 +16,8 @@ interface ConfirmationDialogProps {
 }
 
 const CONFIRM_STYLES = {
-  primary: 'bg-brand-600 hover:bg-brand-700 focus-visible:ring-brand-500',
-  danger: 'bg-red-600 hover:bg-red-700 focus-visible:ring-red-500',
+  primary: 'btn-primary',
+  danger: 'btn-danger',
 } as const
 
 /**
@@ -63,12 +63,12 @@ export function ConfirmationDialog({
         event.preventDefault()
         if (!busy) onCancel()
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-xl border border-slate-200 bg-white p-0 shadow-xl backdrop:bg-navy-950/50"
+      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-xl border border-line bg-white p-0 shadow-xl backdrop:bg-navy-950/60"
     >
       {open && (
         <form onSubmit={handleSubmit} className="space-y-4 p-5 sm:p-6">
           <div>
-            <h2 id={titleId} className="text-lg font-semibold text-navy-800">
+            <h2 id={titleId} className="text-lg font-semibold text-navy">
               {title}
             </h2>
             {description && (
@@ -85,14 +85,14 @@ export function ConfirmationDialog({
               type="button"
               onClick={onCancel}
               disabled={busy}
-              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none disabled:opacity-60"
+              className="btn btn-neutral"
             >
               {cancelLabel}
             </button>
             <button
               type="submit"
               disabled={busy || confirmDisabled}
-              className={`rounded-md px-4 py-2 text-sm font-semibold text-white shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${CONFIRM_STYLES[tone]}`}
+              className={`btn ${CONFIRM_STYLES[tone]}`}
             >
               {busy ? 'İşleniyor…' : confirmLabel}
             </button>

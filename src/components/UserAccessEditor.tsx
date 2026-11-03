@@ -90,7 +90,7 @@ export function UserAccessEditor({ user, departments, saving, error, onSave, onC
           ))}
         </SelectField>
       ) : (
-        <p className="text-xs text-slate-500">Bu rol için birim tanımlanmaz.</p>
+        <p className="text-xs text-muted">Bu rol için birim tanımlanmaz.</p>
       )}
 
       <div>
@@ -103,14 +103,14 @@ export function UserAccessEditor({ user, departments, saving, error, onSave, onC
               setConfirmDeactivate(false)
             }}
             disabled={saving}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+            className="h-4 w-4 rounded border-line-strong accent-primary focus:ring-focus"
           />
           Hesap aktif
         </label>
       </div>
 
       {deactivating && (
-        <div role="alert" className="space-y-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+        <div role="alert" className="space-y-2 rounded-md border border-destructive-border bg-destructive-soft p-3 text-sm text-destructive-hover">
           <p>
             <strong>Uyarı:</strong> Hesap pasifleştirilirse kullanıcı sisteme erişemez ve işlem yapamaz.
           </p>
@@ -120,7 +120,7 @@ export function UserAccessEditor({ user, departments, saving, error, onSave, onC
               checked={confirmDeactivate}
               onChange={(e) => setConfirmDeactivate(e.target.checked)}
               disabled={saving}
-              className="mt-0.5 h-4 w-4 rounded border-red-300 text-red-600 focus:ring-red-500"
+              className="mt-0.5 h-4 w-4 rounded border-destructive-border accent-destructive focus:ring-destructive"
             />
             Hesabı pasifleştirmeyi onaylıyorum.
           </label>
@@ -128,7 +128,7 @@ export function UserAccessEditor({ user, departments, saving, error, onSave, onC
       )}
 
       {leavingFieldRole && (
-        <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        <p className="rounded-md bg-warning-soft px-3 py-2 text-xs text-warning">
           Bu kişiye atanmış açık talepler varsa, erişimi kapandığı için birim yetkilisinin bunları yeniden ataması gerekir.
         </p>
       )}

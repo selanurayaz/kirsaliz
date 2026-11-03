@@ -12,7 +12,7 @@ export function ImageGallery({ attachments, imageUrls, error }: ImageGalleryProp
   if (attachments.length === 0) return null
 
   return (
-    <section aria-labelledby="fotograflar" className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+    <section aria-labelledby="fotograflar" className="card p-5 sm:p-8">
       <h2 id="fotograflar" className="text-lg font-semibold text-navy-800">
         Fotoğraflar
       </h2>
@@ -25,7 +25,7 @@ export function ImageGallery({ attachments, imageUrls, error }: ImageGalleryProp
         {attachments.map((attachment) => {
           const url = imageUrls.get(attachment.storage_path)
           return (
-            <li key={attachment.id} className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+            <li key={attachment.id} className="overflow-hidden rounded-lg border border-line bg-page">
               {url ? (
                 <a
                   href={url}
@@ -36,7 +36,7 @@ export function ImageGallery({ attachments, imageUrls, error }: ImageGalleryProp
                   <img src={url} alt={attachment.original_name} loading="lazy" className="h-40 w-full object-cover" />
                 </a>
               ) : (
-                <div className="flex h-40 items-center justify-center px-3 text-center text-xs text-slate-500">
+                <div className="flex h-40 items-center justify-center px-3 text-center text-xs text-muted">
                   Fotoğraf görüntülenemiyor
                 </div>
               )}

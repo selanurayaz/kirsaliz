@@ -233,26 +233,26 @@ export function NewRequestPage() {
   const selectedCategory = categories.find((c) => c.id === categoryId)
 
   return (
-    <section className="bg-slate-100 px-4 py-8 sm:py-12">
+    <section className="bg-page px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-3xl">
         <Link
           to={ROUTES.myRequests}
-          className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+          className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
         >
           ← Taleplerim
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-navy-800">Yeni Talep Oluştur</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted">
           Köyünüzdeki sorunu bildirin; talebiniz ilgili birime iletilir ve takip kodunuzla izleyebilirsiniz.
         </p>
 
         {referenceError ? (
-          <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mt-6 card p-6">
             <StatusMessage status={{ type: 'error', message: referenceError }} />
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="mt-4 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
+              className="btn btn-primary mt-4"
             >
               Sayfayı Yenile
             </button>
@@ -262,7 +262,7 @@ export function NewRequestPage() {
             onSubmit={handleSubmit}
             noValidate
             aria-busy={submitting}
-            className="mt-6 space-y-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"
+            className="mt-6 space-y-8 card p-5 sm:p-8"
           >
             {/* Konum */}
             <fieldset className="space-y-4" disabled={submitting}>
@@ -324,7 +324,7 @@ export function NewRequestPage() {
             >
               <legend className="text-base font-semibold text-navy-800">2. Talep kategorisi *</legend>
               {categories.length === 0 ? (
-                <p className="text-sm text-slate-500">Şu anda seçilebilir kategori bulunmuyor.</p>
+                <p className="text-sm text-muted">Şu anda seçilebilir kategori bulunmuyor.</p>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2">
                   {categories.map((category) => {
@@ -345,11 +345,11 @@ export function NewRequestPage() {
                         />
                         <label
                           htmlFor={inputId}
-                          className="block h-full cursor-pointer rounded-lg border border-slate-300 bg-white p-3 transition-colors hover:border-brand-400 peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:ring-2 peer-checked:ring-brand-600/30 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500"
+                          className="choice-card"
                         >
                           <span className="block text-sm font-semibold text-navy-800">{category.name}</span>
                           {category.description && (
-                            <span className="mt-0.5 block text-xs text-slate-500">{category.description}</span>
+                            <span className="mt-0.5 block text-xs text-muted">{category.description}</span>
                           )}
                         </label>
                       </div>
@@ -358,10 +358,10 @@ export function NewRequestPage() {
                 </div>
               )}
               {selectedCategory && (
-                <p className="text-xs text-slate-500">Seçilen kategoriye göre talebiniz ilgili birime yönlendirilir.</p>
+                <p className="text-xs text-muted">Seçilen kategoriye göre talebiniz ilgili birime yönlendirilir.</p>
               )}
               {errors.category && (
-                <p id="category-error" className="text-xs text-red-600">
+                <p id="category-error" className="text-xs text-destructive">
                   {errors.category}
                 </p>
               )}
@@ -386,7 +386,7 @@ export function NewRequestPage() {
                   required
                 />
                 {errors.title && (
-                  <p id="title-error" className="text-xs text-red-600">
+                  <p id="title-error" className="text-xs text-destructive">
                     {errors.title}
                   </p>
                 )}
@@ -423,7 +423,7 @@ export function NewRequestPage() {
                 <span id="urgency-label" className="block text-sm font-medium text-navy-800">
                   Aciliyet düzeyi
                 </span>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted">
                   Bu, sizin kendi değerlendirmenizdir; ilgili birim talebi kendi önceliklendirmesine göre ele alır.
                 </p>
                 <div className="grid gap-2 sm:grid-cols-3">
@@ -440,10 +440,10 @@ export function NewRequestPage() {
                       />
                       <label
                         htmlFor={`urgency-${value}`}
-                        className="block cursor-pointer rounded-lg border border-slate-300 bg-white p-3 text-sm transition-colors hover:border-brand-400 peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:ring-2 peer-checked:ring-brand-600/30 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500"
+                        className="choice-card text-sm"
                       >
                         <span className="block font-semibold text-navy-800">{URGENCY_LABELS[value]}</span>
-                        <span className="block text-xs text-slate-500">{URGENCY_HINTS[value]}</span>
+                        <span className="block text-xs text-muted">{URGENCY_HINTS[value]}</span>
                       </label>
                     </div>
                   ))}
@@ -454,7 +454,7 @@ export function NewRequestPage() {
             {/* Konum bilgisi */}
             <fieldset className="space-y-3" disabled={submitting}>
               <legend className="text-base font-semibold text-navy-800">4. Cihaz konumu (isteğe bağlı)</legend>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted">
                 Konumunuz yalnızca aşağıdaki düğmeye bastığınızda ve tarayıcı izin verirse alınır.
               </p>
               <div className="flex flex-wrap items-center gap-2">
@@ -462,7 +462,7 @@ export function NewRequestPage() {
                   type="button"
                   onClick={requestLocation}
                   disabled={locating}
-                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-800 shadow-sm hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                  className="btn btn-neutral"
                 >
                   {locating ? 'Konum alınıyor…' : coordinates ? 'Konumu Yenile' : 'Konumumu Ekle'}
                 </button>
@@ -470,19 +470,19 @@ export function NewRequestPage() {
                   <button
                     type="button"
                     onClick={() => setCoordinates(null)}
-                    className="rounded-md px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+                    className="btn btn-neutral btn-sm"
                   >
                     Konumu Temizle
                   </button>
                 )}
               </div>
               {coordinates && (
-                <p role="status" className="rounded-md bg-brand-50 px-3 py-2 text-sm text-brand-800">
+                <p role="status" className="rounded-md bg-primary-soft px-3 py-2 text-sm text-primary-hover">
                   Enlem: {coordinates.latitude.toFixed(6)} · Boylam: {coordinates.longitude.toFixed(6)}
                 </p>
               )}
               {locationMessage && (
-                <p role="alert" className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                <p role="alert" className="rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
                   {locationMessage}
                 </p>
               )}
@@ -491,19 +491,19 @@ export function NewRequestPage() {
             {/* Fotoğraflar */}
             <ImageUploader files={files} onChange={setFiles} disabled={submitting} />
 
-            <div className="space-y-3 border-t border-slate-100 pt-6">
+            <div className="space-y-3 border-t border-line pt-6">
               <StatusMessage status={status} />
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <Link
                   to={ROUTES.myRequests}
-                  className="rounded-md border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold text-navy-800 hover:bg-slate-50"
+                  className="btn btn-neutral"
                 >
                   Vazgeç
                 </Link>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-md bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                  className="btn btn-primary"
                 >
                   {submitting ? (files.length > 0 ? 'Talep ve fotoğraflar gönderiliyor…' : 'Talep gönderiliyor…') : 'Talebi Gönder'}
                 </button>
