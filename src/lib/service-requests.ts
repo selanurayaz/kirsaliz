@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { UserFacingError, logError, toUserMessage } from '@/lib/errors'
+import { UserFacingError, logError, toUserMessage, toWorkflowError } from '@/lib/errors'
 import { IMAGE_BUCKET, IMAGE_LIMITS } from '@/lib/service-request-config'
 import type {
   ServiceRequest,
@@ -15,7 +15,7 @@ import type {
  * mesajları arayüze sızdırılmaz, yalnızca geliştirme konsoluna yazılır.
  */
 
-const REQUEST_SELECT =
+export const REQUEST_SELECT =
   '*, category:request_categories(id,name,slug,icon,color), department:departments(id,name), village:villages(id,name,district:districts(id,name))'
 
 const SIGNED_URL_TTL_SECONDS = 60 * 60
@@ -238,6 +238,15 @@ export async function getRequestAttachments(requestId: string): Promise<ServiceR
     throw new UserFacingError(toUserMessage(error, LOAD_REQUEST_DETAIL_ERROR))
   }
   return data
+}
+
+/** Vatandaşın kendi talebini iptal etmesi (yalnızca güvenli RPC üzerinden). */
+export async function cancelMyRequest(requestId: string, note?: string): Promise<void> {
+  const { error } = await supabase.rpc('cancel_my_service_request', {
+    p_request_id: requestId,
+    p_note: note?.trim() || null,
+  })
+  if (error) throw toWorkflowError(error, 'Talep iptal edilemedi. Lütfen tekrar deneyin.')
 }
 
 /** Özel bucket için süreli (imzalı) adresler üretir. Anahtar: storage_path. */

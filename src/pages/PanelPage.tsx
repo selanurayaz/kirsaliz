@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router'
+import { useMemo } from 'react'
+import { Link, Navigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { useMyServiceRequests } from '@/hooks/useMyServiceRequests'
 import { RequestCard } from '@/components/RequestCard'
 import { EmptyState } from '@/components/EmptyState'
 import { FullPageSpinner } from '@/components/FullPageSpinner'
 import { StatusMessage } from '@/components/StatusMessage'
-import { getMyProfile } from '@/lib/profiles'
 import { ROUTES } from '@/lib/constants'
-import type { Profile } from '@/types/database'
 
 const PRIMARY_LINK =
   'rounded-md bg-brand-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none'
@@ -22,23 +20,17 @@ function SummaryCard({ label, value, accent }: { label: string; value: number; a
   )
 }
 
-/** Vatandaş paneli: karşılama, özet kartları ve son talepler. */
+/** Kurum personeli vatandaş panelini görmez; kurum paneline yönlendirilir. */
 export function PanelPage() {
-  const { user } = useAuth()
-  const { requests, loading, error, reload } = useMyServiceRequests()
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const userId = user?.id
+  const { role } = useAuth()
+  if (role && role !== 'citizen') return <Navigate to={ROUTES.staffDashboard} replace />
+  return <CitizenPanel />
+}
 
-  useEffect(() => {
-    if (!userId) return
-    let active = true
-    getMyProfile(userId).then((data) => {
-      if (active) setProfile(data)
-    })
-    return () => {
-      active = false
-    }
-  }, [userId])
+/** Vatandaş paneli: karşılama, özet kartları ve son talepler. */
+function CitizenPanel() {
+  const { user, profile } = useAuth()
+  const { requests, loading, error, reload } = useMyServiceRequests()
 
   const metadataName = typeof user?.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : ''
   const displayName = profile?.full_name?.trim() || metadataName.trim() || user?.email || ''

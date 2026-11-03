@@ -1,0 +1,342 @@
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { EmptyState } from '@/components/EmptyState'
+import { FullPageSpinner } from '@/components/FullPageSpinner'
+import { FIELD_CLASS } from '@/components/SelectField'
+import { StaffRequestCard } from '@/components/StaffRequestCard'
+import { StatusMessage } from '@/components/StatusMessage'
+import { fetchActiveDepartments } from '@/lib/reference-data'
+import { logError, toUserMessage } from '@/lib/errors'
+import {
+  STATUS_LABELS,
+  STATUS_ORDER,
+  URGENCY_LABELS,
+  URGENCY_ORDER,
+} from '@/lib/service-request-config'
+import {
+  STAFF_PAGE_SIZE,
+  getStaffRequestSummary,
+  getStaffRequests,
+  type StaffRequestFilters,
+  type StaffRequestPage,
+} from '@/lib/staff-requests'
+import type { Department, RequestUrgency, ServiceRequestStatus, StaffRequestSummary } from '@/types/database'
+
+const SUMMARY_STATUSES: ServiceRequestStatus[] = [
+  'submitted',
+  'under_review',
+  'assigned',
+  'in_progress',
+  'resolved',
+  'rejected',
+]
+
+const TITLES = {
+  admin: 'Kurum Paneli',
+  department_officer: 'Birim Talepleri',
+  field_personnel: 'Görevlerim',
+} as const
+
+const DESCRIPTIONS = {
+  admin: 'Tüm birimlerdeki talepleri izleyin ve yönetin.',
+  department_officer: 'Biriminize gelen talepleri inceleyin, atayın ve sonuçlandırın.',
+  field_personnel: 'Size atanan görevleri görüntüleyin ve ilerletin.',
+} as const
+
+function SummaryCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <dt className="text-xs font-medium text-slate-500">{label}</dt>
+      <dd className="mt-1 text-2xl font-bold text-navy-800">{value}</dd>
+    </div>
+  )
+}
+
+export function StaffDashboardPage() {
+  const { profile } = useAuth()
+  const role = profile?.role
+  const profileId = profile?.id
+  const profileDepartment = profile?.department_id ?? null
+
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+  const [status, setStatus] = useState<ServiceRequestStatus | 'all'>('all')
+  const [urgency, setUrgency] = useState<RequestUrgency | 'all'>('all')
+  const [departmentId, setDepartmentId] = useState('all')
+  const [pageIndex, setPageIndex] = useState(0)
+  const [reloadKey, setReloadKey] = useState(0)
+
+  const [summary, setSummary] = useState<StaffRequestSummary | null>(null)
+  const [summaryError, setSummaryError] = useState<string | null>(null)
+  const [result, setResult] = useState<StaffRequestPage | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Arama kutusu için kısa gecikme
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSearch(searchInput)
+      setPageIndex(0)
+    }, 350)
+    return () => window.clearTimeout(timer)
+  }, [searchInput])
+
+  // Birim filtresi (yalnızca admin)
+  useEffect(() => {
+    if (role !== 'admin') return
+    let alive = true
+    fetchActiveDepartments()
+      .then((data) => {
+        if (alive) setDepartments(data)
+      })
+      .catch((err: unknown) => logError('Birimler yüklenemedi', err))
+    return () => {
+      alive = false
+    }
+  }, [role])
+
+  // Özet kartları
+  useEffect(() => {
+    if (!role) return
+    let alive = true
+    setSummaryError(null)
+    getStaffRequestSummary(role === 'admin' ? departmentId : 'all')
+      .then((data) => {
+        if (alive) setSummary(data)
+      })
+      .catch((err: unknown) => {
+        if (alive) setSummaryError(toUserMessage(err, 'Özet bilgiler yüklenemedi.'))
+      })
+    return () => {
+      alive = false
+    }
+  }, [role, departmentId, reloadKey])
+
+  // Talep listesi
+  useEffect(() => {
+    if (!role || !profileId) return
+    let alive = true
+    setLoading(true)
+    setError(null)
+    const filters: StaffRequestFilters = { search, status, urgency, departmentId }
+    getStaffRequests({ id: profileId, role, department_id: profileDepartment }, filters, pageIndex)
+      .then((data) => {
+        if (alive) setResult(data)
+      })
+      .catch((err: unknown) => {
+        if (alive) setError(toUserMessage(err, 'Talepler yüklenemedi. Lütfen daha sonra tekrar deneyin.'))
+      })
+      .finally(() => {
+        if (alive) setLoading(false)
+      })
+    return () => {
+      alive = false
+    }
+  }, [role, profileId, profileDepartment, search, status, urgency, departmentId, pageIndex, reloadKey])
+
+  if (!role || role === 'citizen') return null
+
+  const total = result?.total ?? 0
+  const pageCount = Math.max(1, Math.ceil(total / STAFF_PAGE_SIZE))
+  const filtering = search.trim() !== '' || status !== 'all' || urgency !== 'all' || departmentId !== 'all'
+  const showOfficerWarning = role === 'department_officer' && !profileDepartment
+
+  function resetFilters() {
+    setSearchInput('')
+    setSearch('')
+    setStatus('all')
+    setUrgency('all')
+    setDepartmentId('all')
+    setPageIndex(0)
+  }
+
+  return (
+    <section className="bg-slate-100 px-4 py-8 sm:py-12">
+      <div className="mx-auto max-w-5xl space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-navy-800">{TITLES[role]}</h1>
+          <p className="mt-1 text-sm text-slate-500">{DESCRIPTIONS[role]}</p>
+        </div>
+
+        {showOfficerWarning && (
+          <StatusMessage
+            status={{
+              type: 'error',
+              message: 'Hesabınıza henüz bir birim atanmamış. Lütfen sistem yöneticisiyle iletişime geçin.',
+            }}
+          />
+        )}
+
+        {summaryError ? (
+          <StatusMessage status={{ type: 'error', message: summaryError }} />
+        ) : (
+          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7" aria-label="Talep özeti">
+            <SummaryCard label="Toplam" value={summary?.total ?? 0} />
+            {SUMMARY_STATUSES.map((s) => (
+              <SummaryCard key={s} label={STATUS_LABELS[s]} value={summary?.counts[s] ?? 0} />
+            ))}
+          </dl>
+        )}
+
+        <div
+          id="talepler"
+          className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
+            <label htmlFor="kurum-arama" className="block text-sm font-medium text-navy-800">
+              Ara
+            </label>
+            <input
+              id="kurum-arama"
+              type="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Takip kodu veya başlık"
+              className={`${FIELD_CLASS} border-slate-300`}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="kurum-durum" className="block text-sm font-medium text-navy-800">
+              Durum
+            </label>
+            <select
+              id="kurum-durum"
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value as ServiceRequestStatus | 'all')
+                setPageIndex(0)
+              }}
+              className={`${FIELD_CLASS} border-slate-300`}
+            >
+              <option value="all">Tüm durumlar</option>
+              {STATUS_ORDER.map((s) => (
+                <option key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="kurum-aciliyet" className="block text-sm font-medium text-navy-800">
+              Aciliyet
+            </label>
+            <select
+              id="kurum-aciliyet"
+              value={urgency}
+              onChange={(e) => {
+                setUrgency(e.target.value as RequestUrgency | 'all')
+                setPageIndex(0)
+              }}
+              className={`${FIELD_CLASS} border-slate-300`}
+            >
+              <option value="all">Tüm düzeyler</option>
+              {URGENCY_ORDER.map((u) => (
+                <option key={u} value={u}>
+                  {URGENCY_LABELS[u]}
+                </option>
+              ))}
+            </select>
+          </div>
+          {role === 'admin' && (
+            <div className="space-y-1.5">
+              <label htmlFor="kurum-birim" className="block text-sm font-medium text-navy-800">
+                Birim
+              </label>
+              <select
+                id="kurum-birim"
+                value={departmentId}
+                onChange={(e) => {
+                  setDepartmentId(e.target.value)
+                  setPageIndex(0)
+                }}
+                className={`${FIELD_CLASS} border-slate-300`}
+              >
+                <option value="all">Tüm birimler</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+
+        {loading && !result ? (
+          <FullPageSpinner label="Talepler yükleniyor…" />
+        ) : error ? (
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <StatusMessage status={{ type: 'error', message: error }} />
+            <button
+              type="button"
+              onClick={() => setReloadKey((k) => k + 1)}
+              className="mt-4 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
+            >
+              Tekrar Dene
+            </button>
+          </div>
+        ) : !result || result.items.length === 0 ? (
+          <EmptyState
+            title={filtering ? 'Eşleşen talep bulunamadı' : 'Henüz talep yok'}
+            description={
+              filtering
+                ? 'Arama veya filtreleri değiştirmeyi deneyin.'
+                : role === 'field_personnel'
+                  ? 'Size atanmış bir görev bulunmuyor.'
+                  : 'Bu kapsamda görüntülenecek talep bulunmuyor.'
+            }
+            action={
+              filtering ? (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-slate-50"
+                >
+                  Filtreleri Temizle
+                </button>
+              ) : undefined
+            }
+          />
+        ) : (
+          <div aria-busy={loading}>
+            <p className="text-sm text-slate-500" role="status">
+              {total} talep bulundu · Sayfa {pageIndex + 1}/{pageCount}
+            </p>
+            <ul className={`mt-3 space-y-3 ${loading ? 'opacity-60' : ''}`}>
+              {result.items.map((request) => (
+                <li key={request.id}>
+                  <StaffRequestCard request={request} />
+                </li>
+              ))}
+            </ul>
+
+            {pageCount > 1 && (
+              <nav aria-label="Sayfalama" className="mt-6 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+                  disabled={pageIndex === 0 || loading}
+                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  ← Önceki
+                </button>
+                <span className="text-sm text-slate-500">
+                  {pageIndex + 1} / {pageCount}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPageIndex((p) => Math.min(pageCount - 1, p + 1))}
+                  disabled={pageIndex >= pageCount - 1 || loading}
+                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Sonraki →
+                </button>
+              </nav>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}

@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { Logo } from '@/components/Logo'
 import { useAuth } from '@/hooks/useAuth'
-import { AUTH_NAV, MAIN_NAV, ROUTES } from '@/lib/constants'
+import { MAIN_NAV, NAV_BY_ROLE, ROUTES } from '@/lib/constants'
+import type { NavItem } from '@/types/navigation'
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, loading, signOut } = useAuth()
+  const { user, loading, profileLoading, role, signOut } = useAuth()
+
+  // Rol yüklenene kadar rol bağlantıları gösterilmez (yanlış menü görünmesin).
+  // Profil okunamazsa en düşük yetki olan vatandaş menüsü kullanılır.
+  const authNav: NavItem[] = user && !profileLoading ? NAV_BY_ROLE[role ?? 'citizen'] : []
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -29,40 +34,48 @@ export function Navbar() {
     setOpen(false)
   }, [location.pathname, location.hash])
 
+  function isActive(item: NavItem): boolean {
+    const [path, hash = ''] = item.to.split('#')
+    return location.pathname === path && (location.hash.replace('#', '') === hash)
+  }
+
+  const linkClass = (active: boolean) =>
+    `rounded-md px-3 py-2 text-sm font-semibold text-navy-800 transition-colors ${
+      active ? 'bg-navy-50' : 'hover:bg-slate-100'
+    }`
+
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
 
-        {/* Masaüstü menü */}
-        <div className="hidden items-center gap-8 md:flex">
-          {(user ? [] : MAIN_NAV).map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="text-sm font-medium text-slate-600 transition-colors hover:text-navy-800"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
+        {/* Masaüstü menü (misafirler için genel bağlantılar) */}
+        {!user && (
+          <div className="hidden items-center gap-8 md:flex">
+            {MAIN_NAV.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="text-sm font-medium text-slate-600 transition-colors hover:text-navy-800"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        )}
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           {loading ? null : user ? (
             <>
-              {AUTH_NAV.map((item) => (
-                <NavLink
-                  key={item.to}
+              {authNav.map((item) => (
+                <Link
+                  key={item.label}
                   to={item.to}
-                  end
-                  className={({ isActive }) =>
-                    `rounded-md px-3 py-2 text-sm font-semibold text-navy-800 transition-colors ${
-                      isActive ? 'bg-navy-50' : 'hover:bg-slate-100'
-                    }`
-                  }
+                  aria-current={isActive(item) ? 'page' : undefined}
+                  className={linkClass(isActive(item))}
                 >
                   {item.label}
-                </NavLink>
+                </Link>
               ))}
               <button
                 type="button"
@@ -75,16 +88,9 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <NavLink
-                to={ROUTES.login}
-                className={({ isActive }) =>
-                  `rounded-md px-4 py-2 text-sm font-semibold text-navy-800 transition-colors ${
-                    isActive ? 'bg-navy-50' : 'hover:bg-slate-100'
-                  }`
-                }
-              >
+              <Link to={ROUTES.login} className={linkClass(location.pathname === ROUTES.login)}>
                 Giriş Yap
-              </NavLink>
+              </Link>
               <Link
                 to={ROUTES.register}
                 className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
@@ -122,11 +128,12 @@ export function Navbar() {
       {open && (
         <div id="mobil-menu" className="border-t border-slate-200 bg-white md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 sm:px-6">
-            {(user ? AUTH_NAV : MAIN_NAV).map((item) => (
+            {(user ? authNav : MAIN_NAV).map((item) => (
               <Link
-                key={item.to}
+                key={item.label}
                 to={item.to}
                 onClick={() => setOpen(false)}
+                aria-current={user && isActive(item) ? 'page' : undefined}
                 className="rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
               >
                 {item.label}

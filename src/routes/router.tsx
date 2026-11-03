@@ -8,8 +8,11 @@ import { NewRequestPage } from '@/pages/NewRequestPage'
 import { MyRequestsPage } from '@/pages/MyRequestsPage'
 import { RequestDetailPage } from '@/pages/RequestDetailPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
-import { GuestOnlyRoute, ProtectedRoute } from '@/routes/guards'
-import { ROUTES } from '@/lib/constants'
+import { StaffDashboardPage } from '@/pages/StaffDashboardPage'
+import { StaffRequestDetailPage } from '@/pages/StaffRequestDetailPage'
+import { AdminUsersPage } from '@/pages/AdminUsersPage'
+import { GuestOnlyRoute, ProtectedRoute, RoleRoute } from '@/routes/guards'
+import { ROUTES, STAFF_ROLES } from '@/lib/constants'
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +33,17 @@ export const router = createBrowserRouter([
           { path: ROUTES.newRequest, element: <NewRequestPage /> },
           { path: ROUTES.myRequests, element: <MyRequestsPage /> },
           { path: ROUTES.requestDetail, element: <RequestDetailPage /> },
+          {
+            element: <RoleRoute allowed={STAFF_ROLES} />,
+            children: [
+              { path: ROUTES.staffDashboard, element: <StaffDashboardPage /> },
+              { path: ROUTES.staffRequestDetail, element: <StaffRequestDetailPage /> },
+            ],
+          },
+          {
+            element: <RoleRoute allowed={['admin']} />,
+            children: [{ path: ROUTES.adminUsers, element: <AdminUsersPage /> }],
+          },
         ],
       },
       { path: '*', element: <NotFoundPage /> },
