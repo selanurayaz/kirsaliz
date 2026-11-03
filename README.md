@@ -63,6 +63,32 @@ Kırsal bölgelerde yaşanan altyapı sorunlarında vatandaş, kurum personeli v
 
 Veritabanı tasarımı, kullanıcı rolleri ve temel uygulama mimarisi oluşturulduktan sonra modüller aşamalı olarak geliştirilecektir.
 
+## Veri Kaynakları
+
+**İlçe ve köy adları** Türkiye İçişleri Bakanlığı'nın [Mülki İdare Bölümleri Envanteri](https://www.e-icisleri.gov.tr/Anasayfa/MulkiIdariBolumleri.aspx)'ne dayanır. Resmî sayfa program aracılığıyla toplu olarak okunamadığından, aynı envanterden derlenen [sabrigunes/turkey-administrative-units-dataset](https://github.com/sabrigunes/turkey-administrative-units-dataset) açık veri seti (CC0 1.0) kullanılmıştır. Veri setinin referans tarihi **Ekim 2025**'tir (depo kaydı `359332c`, 2025-10-06). Veri gerçek zamanlı değildir; bu tarihteki durumu yansıtır.
+
+- Yalnızca **Elazığ** kayıtları içe aktarılmıştır ve yalnızca "köy" sınıfındaki kayıtlar alınmıştır (mahalle, belde ve bağlı yerleşimler dahil değildir).
+- Kaynakta adlar büyük harflidir; Türkçe yazım kurallarına göre baş harfi büyük biçime çevrilmiştir. Merkez ilçe `Merkez` olarak tutulur.
+- **Nüfus ve koordinat bilgisi bilinçli olarak boş (NULL) bırakılmıştır**; seçilen kaynakta bulunmadığı için uydurulmamıştır. Talebin kesin konumu, vatandaşın tarayıcısından alınan GPS bilgisiyle ayrıca sağlanır.
+- İçe aktarma tarihi: 2026-11-03 (`supabase/migrations/005_real_elazig_villages.sql`).
+
+| İlçe | Köy sayısı |
+|---|---:|
+| Ağın | 16 |
+| Alacakaya | 10 |
+| Arıcak | 10 |
+| Baskil | 60 |
+| Karakoçan | 88 |
+| Keban | 30 |
+| Kovancılar | 76 |
+| Maden | 38 |
+| Merkez | 132 |
+| Palu | 37 |
+| Sivrice | 50 |
+| **Toplam** | **547** |
+
+**Üretim verisi ile eski geliştirme seed'i:** `supabase/seed/001_demo_villages.sql` sentetik "Örnek Köy NN" kayıtları (uydurma nüfus ve koordinatlarla, `is_demo = true`) üretir ve yalnızca geliştirme/test içindir. Üretim referans verisi 005 numaralı migration ile gelen gerçek köylerdir (`is_demo = false`). Bir talep tarafından kullanılan demo köyler tarihsel bütünlük için silinmez, ancak arayüz `is_demo = true` köyleri yeni talep formunda listelemez.
+
 ## Geliştirici
 
 **Selanur Ayaz**  
