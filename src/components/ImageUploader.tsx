@@ -21,6 +21,7 @@ export function ImageUploader({ files, onChange, disabled = false }: ImageUpload
   // Önizleme adreslerini üret ve bileşen güncellenince/kapanınca serbest bırak.
   useEffect(() => {
     const next = files.map((file) => ({ file, url: URL.createObjectURL(file) }))
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- tarayıcı kaynağı (nesne adresi) ile senkronizasyon
     setPreviews(next)
     return () => next.forEach((p) => URL.revokeObjectURL(p.url))
   }, [files])
@@ -60,6 +61,7 @@ export function ImageUploader({ files, onChange, disabled = false }: ImageUpload
         className="sr-only"
         onChange={handleSelect}
         disabled={disabled || full}
+        aria-label="Fotoğraf dosyaları"
         aria-describedby="gorsel-ipucu"
       />
       <button

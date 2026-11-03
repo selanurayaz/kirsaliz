@@ -44,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Profil, kullanıcı değiştiğinde yalnızca bir kez yüklenir (token yenilemeleri tetiklemez).
   useEffect(() => {
     if (!userId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- veri yüklemesi başlarken yükleme durumu sıfırlanır
       setProfileState(null)
       return
     }

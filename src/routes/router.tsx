@@ -1,22 +1,27 @@
 import { createBrowserRouter } from 'react-router'
 import { MainLayout } from '@/layouts/MainLayout'
-import { HomePage } from '@/pages/HomePage'
-import { LoginPage } from '@/pages/LoginPage'
-import { RegisterPage } from '@/pages/RegisterPage'
-import { PanelPage } from '@/pages/PanelPage'
-import { NewRequestPage } from '@/pages/NewRequestPage'
-import { MyRequestsPage } from '@/pages/MyRequestsPage'
-import { RequestDetailPage } from '@/pages/RequestDetailPage'
-import { NotFoundPage } from '@/pages/NotFoundPage'
-import { StaffDashboardPage } from '@/pages/StaffDashboardPage'
-import { StaffRequestDetailPage } from '@/pages/StaffRequestDetailPage'
-import { AdminUsersPage } from '@/pages/AdminUsersPage'
 import { GuestOnlyRoute, ProtectedRoute, RoleRoute } from '@/routes/guards'
+import {
+  HomePage,
+  LoginPage,
+  RegisterPage,
+  PanelPage,
+  NewRequestPage,
+  MyRequestsPage,
+  RequestDetailPage,
+  NotFoundPage,
+  StaffDashboardPage,
+  StaffRequestDetailPage,
+  AdminUsersPage,
+} from '@/routes/lazy-pages'
+import { RouteErrorFallback } from '@/routes/RouteErrorFallback'
 import { ROUTES, STAFF_ROLES } from '@/lib/constants'
+
 
 export const router = createBrowserRouter([
   {
     element: <MainLayout />,
+    errorElement: <RouteErrorFallback />,
     children: [
       { path: ROUTES.home, element: <HomePage /> },
       {
