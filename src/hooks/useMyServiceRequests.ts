@@ -16,6 +16,7 @@ export function useMyServiceRequests() {
   useEffect(() => {
     if (!userId) return
     let active = true
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- veri yüklemesi başlarken yükleme durumu sıfırlanır
     setLoading(true)
     setError(null)
     getMyServiceRequests(userId)

@@ -53,6 +53,7 @@ export function AdminUsersPage() {
 
   useEffect(() => {
     let alive = true
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- veri yüklemesi başlarken yükleme durumu sıfırlanır
     setLoading(true)
     setError(null)
     Promise.all([getAdminUsers(), fetchActiveDepartments()])

@@ -100,6 +100,7 @@ export function StaffDashboardPage() {
   useEffect(() => {
     if (!role) return
     let alive = true
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- veri yüklemesi başlarken yükleme durumu sıfırlanır
     setSummaryError(null)
     getStaffRequestSummary(role === 'admin' ? departmentId : 'all')
       .then((data) => {
@@ -117,6 +118,7 @@ export function StaffDashboardPage() {
   useEffect(() => {
     if (!role || !profileId) return
     let alive = true
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- veri yüklemesi başlarken yükleme durumu sıfırlanır
     setLoading(true)
     setError(null)
     const filters: StaffRequestFilters = { search, status, urgency, departmentId }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { Logo } from '@/components/Logo'
 import { useAuth } from '@/hooks/useAuth'
@@ -30,9 +30,12 @@ export function Navbar() {
   }
 
   // Sayfa veya bölüm değiştiğinde mobil menüyü kapat
-  useEffect(() => {
+  const locationKey = `${location.pathname}${location.hash}`
+  const [menuLocationKey, setMenuLocationKey] = useState(locationKey)
+  if (menuLocationKey !== locationKey) {
+    setMenuLocationKey(locationKey)
     setOpen(false)
-  }, [location.pathname, location.hash])
+  }
 
   function isActive(item: NavItem): boolean {
     const [path, hash = ''] = item.to.split('#')

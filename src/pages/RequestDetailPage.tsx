@@ -67,6 +67,7 @@ export function RequestDetailPage() {
   useEffect(() => {
     if (!userId) return
     let active = true
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- veri yüklemesi başlarken yükleme durumu sıfırlanır
     setState({ kind: 'loading' })
 
     async function load(currentUserId: string) {

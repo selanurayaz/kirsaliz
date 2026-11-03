@@ -9,6 +9,7 @@ import { StatusMessage, type StatusState } from '@/components/StatusMessage'
 import { FullPageSpinner } from '@/components/FullPageSpinner'
 import { fetchActiveDistricts, fetchActiveRequestCategories, fetchVillagesByDistrict } from '@/lib/reference-data'
 import { createServiceRequest, uploadRequestImages } from '@/lib/service-requests'
+import { validateRequestText } from '@/lib/request-validation'
 import { REQUEST_LIMITS, URGENCY_LABELS, URGENCY_ORDER } from '@/lib/service-request-config'
 import { logError, toUserMessage } from '@/lib/errors'
 import { ROUTES, requestDetailPath } from '@/lib/constants'
@@ -98,6 +99,7 @@ export function NewRequestPage() {
   useEffect(() => {
     if (!districtId) return
     let active = true
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- veri yüklemesi başlarken yükleme durumu sıfırlanır
     setVillagesLoading(true)
     fetchVillagesByDistrict(districtId)
       .then((data) => {
@@ -151,28 +153,10 @@ export function NewRequestPage() {
 
   function validate(): FieldErrors {
     const next: FieldErrors = {}
-    const trimmedTitle = title.trim()
-    const trimmedDescription = description.trim()
-
     if (!districtId) next.district = 'Lütfen ilçe seçin.'
     if (!villageId) next.village = 'Lütfen köy seçin.'
     if (!categoryId) next.category = 'Lütfen bir talep kategorisi seçin.'
-
-    if (trimmedTitle.length < REQUEST_LIMITS.titleMin) {
-      next.title = `Başlık en az ${REQUEST_LIMITS.titleMin} karakter olmalıdır.`
-    } else if (trimmedTitle.length > REQUEST_LIMITS.titleMax) {
-      next.title = `Başlık en fazla ${REQUEST_LIMITS.titleMax} karakter olabilir.`
-    }
-
-    if (trimmedDescription.length < REQUEST_LIMITS.descriptionMin) {
-      next.description = `Açıklama en az ${REQUEST_LIMITS.descriptionMin} karakter olmalıdır.`
-    } else if (trimmedDescription.length > REQUEST_LIMITS.descriptionMax) {
-      next.description = `Açıklama en fazla ${REQUEST_LIMITS.descriptionMax} karakter olabilir.`
-    }
-
-    if (address.trim().length > REQUEST_LIMITS.addressMax) {
-      next.address = `Adres en fazla ${REQUEST_LIMITS.addressMax} karakter olabilir.`
-    }
+    Object.assign(next, validateRequestText({ title, description, address }))
     return next
   }
 
