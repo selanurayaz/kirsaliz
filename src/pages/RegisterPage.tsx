@@ -92,7 +92,7 @@ export function RegisterPage() {
       footer={
         <>
           Zaten hesabınız var mı?{' '}
-          <Link to={ROUTES.login} className="font-semibold text-brand-700 hover:text-brand-800">
+          <Link to={ROUTES.login} className="font-semibold text-primary underline underline-offset-2 hover:text-primary-dark">
             Giriş yapın
           </Link>
         </>
@@ -103,7 +103,7 @@ export function RegisterPage() {
           <StatusMessage status={status} />
           <Link
             to={ROUTES.login}
-            className="block w-full rounded-md bg-navy-800 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-navy-700"
+            className="btn btn-primary w-full"
           >
             Giriş sayfasına git
           </Link>
@@ -162,7 +162,7 @@ export function RegisterPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-md bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn btn-primary w-full"
           >
             {submitting ? 'Kayıt oluşturuluyor…' : 'Kayıt Ol'}
           </button>

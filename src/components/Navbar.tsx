@@ -40,12 +40,12 @@ export function Navbar() {
   }
 
   const linkClass = (active: boolean) =>
-    `rounded-md px-3 py-2 text-sm font-semibold text-navy-800 transition-colors ${
-      active ? 'bg-navy-50' : 'hover:bg-slate-100'
+    `rounded-md px-3 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none ${
+      active ? 'bg-primary-soft text-primary' : 'text-navy hover:bg-primary-soft hover:text-primary'
     }`
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-t-4 border-b border-t-primary border-b-line bg-white">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
 
@@ -56,7 +56,7 @@ export function Navbar() {
               <Link
                 key={item.to}
                 to={item.to}
-                className="text-sm font-medium text-slate-600 transition-colors hover:text-navy-800"
+                className="rounded-md px-1 py-1 text-sm font-medium text-navy transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
               >
                 {item.label}
               </Link>
@@ -65,7 +65,10 @@ export function Navbar() {
         )}
 
         <div className="hidden items-center gap-2 md:flex">
-          {loading ? null : user ? (
+          {loading || (user && profileLoading) ? (
+            // Düzen kaymasını önlemek için menü alanı yer tutucuyla ayrılır.
+            <span aria-hidden="true" className="block h-9 w-56 rounded-md bg-page" />
+          ) : user ? (
             <>
               {authNav.map((item) => (
                 <Link
@@ -81,9 +84,9 @@ export function Navbar() {
                 type="button"
                 onClick={handleSignOut}
                 disabled={signingOut}
-                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="btn btn-neutral btn-sm min-w-28"
               >
-                Çıkış Yap
+                {signingOut ? 'Çıkış yapılıyor…' : 'Çıkış Yap'}
               </button>
             </>
           ) : (
@@ -93,7 +96,7 @@ export function Navbar() {
               </Link>
               <Link
                 to={ROUTES.register}
-                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
+                className="btn btn-primary btn-sm"
               >
                 Kayıt Ol
               </Link>
@@ -105,7 +108,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-navy-800 hover:bg-slate-100 md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-navy hover:bg-primary-soft focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none md:hidden"
           aria-label={open ? 'Menüyü kapat' : 'Menüyü aç'}
           aria-expanded={open}
           aria-controls="mobil-menu"
@@ -126,7 +129,7 @@ export function Navbar() {
 
       {/* Mobil menü */}
       {open && (
-        <div id="mobil-menu" className="border-t border-slate-200 bg-white md:hidden">
+        <div id="mobil-menu" className="border-t border-line bg-white md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 sm:px-6">
             {(user ? authNav : MAIN_NAV).map((item) => (
               <Link
@@ -134,33 +137,33 @@ export function Navbar() {
                 to={item.to}
                 onClick={() => setOpen(false)}
                 aria-current={user && isActive(item) ? 'page' : undefined}
-                className="rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                className={`${linkClass(user ? isActive(item) : false)} min-h-11 content-center`}
               >
                 {item.label}
               </Link>
             ))}
             {!loading && (
-              <div className={`mt-2 border-t border-slate-100 pt-3 ${user ? '' : 'grid grid-cols-2 gap-2'}`}>
+              <div className={`mt-2 border-t border-line pt-3 ${user ? '' : 'grid grid-cols-2 gap-2'}`}>
                 {user ? (
                   <button
                     type="button"
                     onClick={handleSignOut}
                     disabled={signingOut}
-                    className="w-full rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="btn btn-neutral w-full"
                   >
-                    Çıkış Yap
+                    {signingOut ? 'Çıkış yapılıyor…' : 'Çıkış Yap'}
                   </button>
                 ) : (
                   <>
                     <Link
                       to={ROUTES.login}
-                      className="rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-semibold text-navy-800 hover:bg-slate-50"
+                      className="btn btn-neutral"
                     >
                       Giriş Yap
                     </Link>
                     <Link
                       to={ROUTES.register}
-                      className="rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700"
+                      className="btn btn-primary"
                     >
                       Kayıt Ol
                     </Link>

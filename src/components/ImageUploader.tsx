@@ -45,8 +45,8 @@ export function ImageUploader({ files, onChange, disabled = false }: ImageUpload
   return (
     <div className="space-y-3">
       <div>
-        <span className="block text-sm font-medium text-navy-800">Fotoğraflar (isteğe bağlı)</span>
-        <p id="gorsel-ipucu" className="mt-0.5 text-xs text-slate-500">
+        <span className="field-label">Fotoğraflar (isteğe bağlı)</span>
+        <p id="gorsel-ipucu" className="mt-0.5 text-xs text-muted">
           En fazla {IMAGE_LIMITS.maxCount} fotoğraf; JPEG, PNG veya WebP; her biri en fazla 5 MB.
         </p>
       </div>
@@ -66,13 +66,13 @@ export function ImageUploader({ files, onChange, disabled = false }: ImageUpload
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={disabled || full}
-        className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-800 shadow-sm transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn btn-neutral"
       >
         {full ? 'Fotoğraf sınırına ulaşıldı' : 'Fotoğraf Seç'}
       </button>
 
       {errors.length > 0 && (
-        <ul role="alert" className="space-y-1 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <ul role="alert" className="space-y-1 rounded-md border border-destructive-border bg-destructive-soft px-3 py-2 text-sm text-destructive-hover">
           {errors.map((message) => (
             <li key={message}>{message}</li>
           ))}
@@ -82,19 +82,19 @@ export function ImageUploader({ files, onChange, disabled = false }: ImageUpload
       {previews.length > 0 && (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {previews.map((preview, index) => (
-            <li key={preview.url} className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <li key={preview.url} className="overflow-hidden rounded-lg border border-line bg-white">
               <img src={preview.url} alt={`Seçilen fotoğraf: ${preview.file.name}`} className="h-32 w-full object-cover" />
               <div className="flex items-center justify-between gap-2 px-2 py-1.5">
                 <span className="min-w-0 text-xs text-slate-600">
                   <span className="block truncate">{preview.file.name}</span>
-                  <span className="text-slate-400">{formatFileSize(preview.file.size)}</span>
+                  <span className="text-muted">{formatFileSize(preview.file.size)}</span>
                 </span>
                 <button
                   type="button"
                   onClick={() => handleRemove(index)}
                   disabled={disabled}
                   aria-label={`${preview.file.name} fotoğrafını kaldır`}
-                  className="shrink-0 rounded px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none disabled:opacity-60"
+                  className="btn btn-danger-outline btn-sm shrink-0 text-xs"
                 >
                   Kaldır
                 </button>

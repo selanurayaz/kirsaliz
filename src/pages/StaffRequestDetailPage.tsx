@@ -41,7 +41,7 @@ const LOAD_ERROR = 'Talep bilgileri yüklenemedi. Lütfen daha sonra tekrar dene
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium tracking-wide text-slate-500 uppercase">{label}</dt>
+      <dt className="text-xs font-medium tracking-wide text-muted uppercase">{label}</dt>
       <dd className="mt-0.5 text-sm break-words text-navy-900">{children}</dd>
     </div>
   )
@@ -92,7 +92,7 @@ export function StaffRequestDetailPage() {
   const backLink = (
     <Link
       to={ROUTES.staffDashboard}
-      className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+      className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
     >
       ← Kurum Paneli
     </Link>
@@ -102,7 +102,7 @@ export function StaffRequestDetailPage() {
 
   if (state.kind === 'not-found') {
     return (
-      <section className="bg-slate-100 px-4 py-8 sm:py-12">
+      <section className="bg-page px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-3xl space-y-4">
           {backLink}
           <EmptyState
@@ -116,10 +116,10 @@ export function StaffRequestDetailPage() {
 
   if (state.kind === 'error') {
     return (
-      <section className="bg-slate-100 px-4 py-8 sm:py-12">
+      <section className="bg-page px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-3xl space-y-4">
           {backLink}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="card p-6">
             <StatusMessage status={{ type: 'error', message: state.message }} />
             <button
               type="button"
@@ -127,7 +127,7 @@ export function StaffRequestDetailPage() {
                 setState({ kind: 'loading' })
                 setReloadKey((k) => k + 1)
               }}
-              className="mt-4 rounded-md bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
+              className="btn btn-primary mt-4"
             >
               Tekrar Dene
             </button>
@@ -140,15 +140,15 @@ export function StaffRequestDetailPage() {
   const { request, history, attachments, imageUrls, imageError } = state
 
   return (
-    <section className="bg-slate-100 px-4 py-8 sm:py-12">
+    <section className="bg-page px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-3xl space-y-6">
         {backLink}
 
         <StatusMessage status={flash} />
 
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <article className="card p-5 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-mono text-sm font-semibold tracking-wide text-slate-500">{request.tracking_code}</p>
+            <p className="font-mono text-sm font-semibold tracking-wide text-muted">{request.tracking_code}</p>
             <div className="flex flex-wrap gap-1.5">
               <StatusBadge status={request.status} />
               <UrgencyBadge urgency={request.urgency} />
@@ -158,7 +158,7 @@ export function StaffRequestDetailPage() {
           <h1 className="mt-3 text-2xl font-bold break-words text-navy-800">{request.title}</h1>
           <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-700">{request.description}</p>
 
-          <dl className="mt-6 grid gap-4 border-t border-slate-100 pt-6 sm:grid-cols-2">
+          <dl className="mt-6 grid gap-4 border-t border-line pt-6 sm:grid-cols-2">
             <Field label="Vatandaş">{request.citizen_name?.trim() || 'Belirtilmemiş'}</Field>
             <Field label="Atanan saha personeli">
               {request.assigned_to ? (request.assigned_name?.trim() || 'Adsız personel') : 'Henüz atanmadı'}

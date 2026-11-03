@@ -6,9 +6,9 @@ import type { ServiceRequestWithRelations } from '@/types/database'
 
 export function RequestCard({ request }: { request: ServiceRequestWithRelations }) {
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-brand-300 sm:p-5">
+    <article className="card p-4 transition-colors hover:border-primary-border sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <p className="font-mono text-xs font-semibold tracking-wide text-slate-500">{request.tracking_code}</p>
+        <p className="font-mono text-xs font-semibold tracking-wide text-muted">{request.tracking_code}</p>
         <div className="flex flex-wrap gap-1.5">
           <StatusBadge status={request.status} />
           <UrgencyBadge urgency={request.urgency} />
@@ -35,7 +35,7 @@ export function RequestCard({ request }: { request: ServiceRequestWithRelations 
       <div className="mt-3">
         <Link
           to={requestDetailPath(request.id)}
-          className="rounded text-sm font-semibold text-brand-700 hover:text-brand-800 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+          className="rounded text-sm font-semibold text-primary hover:text-primary-dark focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
           aria-label={`${request.title} talebinin detaylarını gör`}
         >
           Detayları gör →
