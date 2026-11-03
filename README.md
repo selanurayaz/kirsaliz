@@ -89,6 +89,28 @@ Veritabanı tasarımı, kullanıcı rolleri ve temel uygulama mimarisi oluşturu
 
 **Üretim verisi ile eski geliştirme seed'i:** `supabase/seed/001_demo_villages.sql` sentetik "Örnek Köy NN" kayıtları (uydurma nüfus ve koordinatlarla, `is_demo = true`) üretir ve yalnızca geliştirme/test içindir. Üretim referans verisi 005 numaralı migration ile gelen gerçek köylerdir (`is_demo = false`). Bir talep tarafından kullanılan demo köyler tarihsel bütünlük için silinmez, ancak arayüz `is_demo = true` köyleri yeni talep formunda listelemez.
 
+## Dağıtım (Deployment)
+
+Uygulama **Vercel** üzerinde, GitHub deposundan (`selanurayaz/kirsaliz`) yayımlanır. `main` dalına yapılan her birleştirme otomatik olarak üretime dağıtılır; pull request'ler önizleme dağıtımı alabilir. Dağıtımı Vercel'in GitHub entegrasyonu yapar; GitHub Actions yalnızca lint, tür denetimi, test ve derleme çalıştırır.
+
+| Ayar | Değer |
+|---|---|
+| Framework Preset | Vite |
+| Install Command | `npm install` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+`vercel.json`, React Router'ın istemci tarafı rotaları (ör. `/giris`, `/taleplerim/:id`, `/kurum`) doğrudan açıldığında veya sayfa yenilendiğinde `index.html` döndürür. Vercel önce gerçek dosyaları sunduğu için `/assets/` altındaki dosyalar ve diğer statik dosyalar olduğu gibi yüklenir.
+
+**Ortam değişkenleri** (Vercel → Project Settings → Environment Variables):
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+Bu değerler yalnızca Vercel panelinde girilir, depoya eklenmez. `.env.local` yerelde kalır ve git tarafından yok sayılır; `.env.example` yalnızca yer tutucu içerir. **Supabase `service_role` anahtarı Vercel'e veya ön yüz koduna asla eklenmemelidir.**
+
+**Supabase ayarı:** Authentication → URL Configuration bölümünde, üretim Vercel adresini (ör. `https://<proje>.vercel.app`) *Site URL* ve *Redirect URLs* listesine ekleyin. Yerel geliştirme için `http://localhost:5173` yönlendirmesini listede tutun.
+
 ## Geliştirici
 
 **Selanur Ayaz**  
