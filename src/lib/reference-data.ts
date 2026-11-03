@@ -7,27 +7,41 @@ import type { Department, District, RequestCategory, Village } from '@/types/dat
  * Hatalar çağıran tarafa fırlatılır.
  */
 
+const turkishCollator = new Intl.Collator('tr-TR')
+
+/** Adlara göre Türkçe alfabe sırasıyla (ç, ğ, ı, ö, ş, ü doğru konumda) sıralar. */
+export function sortByTurkishName<T extends { name: string }>(items: readonly T[]): T[] {
+  return [...items].sort((a, b) => turkishCollator.compare(a.name, b.name))
+}
+
 export async function fetchActiveDistricts(): Promise<District[]> {
   const { data, error } = await supabase
     .from('districts')
     .select('*')
     .eq('is_active', true)
     .order('name')
+    .order('id')
 
   if (error) throw error
-  return data
+  return sortByTurkishName(data)
 }
 
+/**
+ * Yeni talep formunda seçilebilecek köyler: yalnızca aktif ve demo olmayan kayıtlar.
+ * Eski talepler tarafından kullanıldığı için saklanan demo köyler burada listelenmez.
+ */
 export async function fetchVillagesByDistrict(districtId: string): Promise<Village[]> {
   const { data, error } = await supabase
     .from('villages')
     .select('*')
     .eq('district_id', districtId)
     .eq('is_active', true)
+    .eq('is_demo', false)
     .order('name')
+    .order('id')
 
   if (error) throw error
-  return data
+  return sortByTurkishName(data)
 }
 
 export async function fetchActiveDepartments(): Promise<Department[]> {
