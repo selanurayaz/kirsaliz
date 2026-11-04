@@ -12,3 +12,4 @@ export const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((m) =
 export const StaffDashboardPage = lazy(() => import('@/pages/StaffDashboardPage').then((m) => ({ default: m.StaffDashboardPage })))
 export const StaffRequestDetailPage = lazy(() => import('@/pages/StaffRequestDetailPage').then((m) => ({ default: m.StaffRequestDetailPage })))
 export const AdminUsersPage = lazy(() => import('@/pages/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })))
+export const ProfilePage = lazy(() => import('@/pages/ProfilePage').then((m) => ({ default: m.ProfilePage })))

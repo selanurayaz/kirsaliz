@@ -13,6 +13,7 @@ import {
   StaffDashboardPage,
   StaffRequestDetailPage,
   AdminUsersPage,
+  ProfilePage,
 } from '@/routes/lazy-pages'
 import { RouteErrorFallback } from '@/routes/RouteErrorFallback'
 import { ROUTES, STAFF_ROLES } from '@/lib/constants'
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
           { path: ROUTES.newRequest, element: <NewRequestPage /> },
           { path: ROUTES.myRequests, element: <MyRequestsPage /> },
           { path: ROUTES.requestDetail, element: <RequestDetailPage /> },
+          { path: ROUTES.profile, element: <ProfilePage /> },
           {
             element: <RoleRoute allowed={STAFF_ROLES} />,
             children: [

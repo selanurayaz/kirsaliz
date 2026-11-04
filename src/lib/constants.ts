@@ -15,6 +15,7 @@ export const ROUTES = {
   staffDashboard: '/kurum',
   staffRequestDetail: '/kurum/talepler/:id',
   adminUsers: '/yonetim/kullanicilar',
+  profile: '/profil',
 } as const
 
 /** Talep detay sayfasının adresini üretir. */
@@ -34,20 +35,25 @@ export function staffRequestDetailPath(id: string): string {
 }
 
 /** Role göre gezinme bağlantıları (Çıkış Yap navbar'da ayrıca gösterilir). */
+const PROFILE_NAV: NavItem = { label: 'Profilim', to: ROUTES.profile }
+
 export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
   citizen: [
     { label: 'Panel', to: ROUTES.panel },
     { label: 'Yeni Talep', to: ROUTES.newRequest },
     { label: 'Taleplerim', to: ROUTES.myRequests },
+    PROFILE_NAV,
   ],
   department_officer: [
     { label: 'Kurum Paneli', to: ROUTES.staffDashboard },
     { label: 'Birim Talepleri', to: `${ROUTES.staffDashboard}#talepler` },
+    PROFILE_NAV,
   ],
-  field_personnel: [{ label: 'Görevlerim', to: ROUTES.staffDashboard }],
+  field_personnel: [{ label: 'Görevlerim', to: ROUTES.staffDashboard }, PROFILE_NAV],
   admin: [
     { label: 'Kurum Paneli', to: ROUTES.staffDashboard },
     { label: 'Kullanıcı Yönetimi', to: ROUTES.adminUsers },
+    PROFILE_NAV,
   ],
 }
 
