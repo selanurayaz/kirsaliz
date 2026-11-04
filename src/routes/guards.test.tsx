@@ -20,6 +20,7 @@ function renderAt(path: string, auth: AuthContextValue) {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/panel" element={<p>Vatandaş paneli</p>} />
+            <Route path="/profil" element={<p>Profil sayfası</p>} />
             <Route element={<RoleRoute allowed={STAFF_ROLES} />}>
               <Route path="/kurum" element={<p>Kurum paneli</p>} />
             </Route>
@@ -32,6 +33,33 @@ function renderAt(path: string, auth: AuthContextValue) {
     </AuthTestProvider>,
   )
 }
+
+describe('ProtectedRoute — /profil', () => {
+  it('oturumsuz kullanıcıyı /giris sayfasına yönlendirir', () => {
+    renderAt('/profil', makeAuth(null))
+    expect(screen.getByText('Giriş sayfası')).toBeInTheDocument()
+  })
+
+  it('oturum yüklenirken erken yönlendirme yapmaz', () => {
+    renderAt('/profil', makeAuth(null, { loading: true }))
+    expect(screen.queryByText('Giriş sayfası')).not.toBeInTheDocument()
+    expect(screen.queryByText('Profil sayfası')).not.toBeInTheDocument()
+  })
+
+  it.each<UserRole>(['citizen', 'department_officer', 'field_personnel', 'admin'])(
+    'aktif %s kullanıcısı erişebilir',
+    (role) => {
+      renderAt('/profil', makeAuth(role))
+      expect(screen.getByText('Profil sayfası')).toBeInTheDocument()
+    },
+  )
+
+  it('pasif hesap profil sayfasını göremez', () => {
+    renderAt('/profil', makeAuth('citizen', { profile: makeProfile('citizen', { is_active: false }) }))
+    expect(screen.queryByText('Profil sayfası')).not.toBeInTheDocument()
+    expect(screen.getByText('Hesabınız pasif durumda')).toBeInTheDocument()
+  })
+})
 
 describe('ProtectedRoute', () => {
   it('oturumsuz kullanıcıyı /giris sayfasına yönlendirir', () => {

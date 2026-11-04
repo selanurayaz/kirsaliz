@@ -1,6 +1,6 @@
 /**
  * Supabase veritabanı tipleri.
- * supabase/migrations/001_profiles.sql, 002_reference_data.sql, 003_service_requests.sql ve 004_staff_workflow.sql ile senkron tutulmalıdır.
+ * supabase/migrations/001_profiles.sql, 002_reference_data.sql, 003_service_requests.sql ve 004_staff_workflow.sql, 005 ve 006_user_profile.sql ile senkron tutulmalıdır.
  * (İleride `supabase gen types typescript` ile otomatik üretilebilir.)
  */
 
@@ -407,6 +407,15 @@ export type Database = {
       get_staff_request_summary: {
         Args: { p_department_id?: string | null }
         Returns: StaffRequestSummaryRow[]
+      }
+      update_my_profile: {
+        Args: {
+          p_full_name: string
+          p_phone: string | null
+          p_village_id?: string | null
+          p_update_village?: boolean
+        }
+        Returns: Profile
       }
       admin_list_users: { Args: Record<PropertyKey, never>; Returns: AdminUserListItem[] }
       admin_update_user_access: {
