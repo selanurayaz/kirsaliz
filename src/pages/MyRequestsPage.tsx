@@ -33,12 +33,12 @@ export function MyRequestsPage() {
   const filtering = statusFilter !== 'all' || query.trim() !== ''
 
   return (
-    <section className="bg-page px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-4xl">
+    <section className="page-section">
+      <div className="page-container">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-navy-800">Taleplerim</h1>
-            <p className="mt-1 text-sm text-muted">Oluşturduğunuz taleplerin durumunu buradan izleyebilirsiniz.</p>
+            <h1 className="page-title">Taleplerim</h1>
+            <p className="page-subtitle">Oluşturduğunuz taleplerin durumunu buradan izleyebilirsiniz.</p>
           </div>
           <Link to={ROUTES.newRequest} className={PRIMARY_LINK}>
             Yeni Talep Oluştur
@@ -48,7 +48,7 @@ export function MyRequestsPage() {
         {loading ? (
           <FullPageSpinner label="Talepleriniz yükleniyor…" />
         ) : error ? (
-          <div className="mt-6 card p-6">
+          <div className="card card-body mt-6">
             <StatusMessage status={{ type: 'error', message: error }} />
             <button
               type="button"
@@ -72,9 +72,9 @@ export function MyRequestsPage() {
           </div>
         ) : (
           <>
-            <div className="mt-6 grid gap-3 card p-4 sm:grid-cols-3">
+            <div className="card mt-6 grid gap-3 p-4 sm:grid-cols-3">
               <div className="space-y-1.5 sm:col-span-2">
-                <label htmlFor="arama" className="block text-sm font-medium text-navy-800">
+                <label htmlFor="arama" className="field-label">
                   Ara
                 </label>
                 <input
@@ -87,7 +87,7 @@ export function MyRequestsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="durum" className="block text-sm font-medium text-navy-800">
+                <label htmlFor="durum" className="field-label">
                   Durum
                 </label>
                 <select

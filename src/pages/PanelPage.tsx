@@ -11,9 +11,9 @@ import { ROUTES } from '@/lib/constants'
 
 function SummaryCard({ label, value, accent }: { label: string; value: number; accent: string }) {
   return (
-    <div className="card border-l-4 border-l-primary p-4">
-      <dt className="text-xs font-semibold text-muted">{label}</dt>
-      <dd className={`mt-1 text-3xl font-bold ${accent}`}>{value}</dd>
+    <div className="stat">
+      <dt className="stat-label">{label}</dt>
+      <dd className={`stat-value ${accent}`}>{value}</dd>
     </div>
   )
 }
@@ -44,24 +44,23 @@ function CitizenPanel() {
   )
 
   return (
-    <section className="px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-4xl space-y-8">
-        <div className="rounded-xl border-b-4 border-primary bg-primary-dark p-6 text-white shadow-sm sm:p-8">
-          <p className="text-sm text-primary-border">Hoş geldiniz</p>
-          <h1 className="mt-1 text-2xl font-bold break-words sm:text-3xl">{displayName}</h1>
-          <p className="mt-2 text-sm text-primary-soft">Köyünüzdeki sorunları bildirin, taleplerinizin durumunu izleyin.</p>
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Link to={ROUTES.newRequest} className="btn bg-white text-primary-dark hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary-dark">
+    <section className="page-section">
+      <div className="page-container space-y-8">
+        <header className="flex flex-col gap-5 rounded-xl border border-line border-l-4 border-l-primary bg-white p-5 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="min-w-0">
+            <p className="eyebrow">Hoş geldiniz</p>
+            <h1 className="page-title mt-1 break-words">{displayName}</h1>
+            <p className="page-subtitle">Köyünüzdeki sorunları bildirin, taleplerinizin durumunu izleyin.</p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:shrink-0">
+            <Link to={ROUTES.newRequest} className="btn btn-primary btn-lg">
               Yeni Talep Oluştur
             </Link>
-            <Link
-              to={ROUTES.myRequests}
-              className="btn border-white/40 text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-primary-dark"
-            >
+            <Link to={ROUTES.myRequests} className="btn btn-secondary btn-lg">
               Taleplerim
             </Link>
           </div>
-        </div>
+        </header>
 
         {loading ? (
           <FullPageSpinner label="Talepleriniz yükleniyor…" />
@@ -78,18 +77,18 @@ function CitizenPanel() {
           </div>
         ) : (
           <>
-            <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Talep özeti">
+            <dl className="stat-strip grid-cols-2 lg:grid-cols-4" aria-label="Talep özeti">
               <SummaryCard label="Toplam talep" value={summary.total} accent="text-navy" />
-              <SummaryCard label="Alındı / İnceleniyor" value={summary.pending} accent="text-navy-soft" />
+              <SummaryCard label="Alındı / İnceleniyor" value={summary.pending} accent="text-navy-muted" />
               <SummaryCard label="İşlemde" value={summary.inProgress} accent="text-primary" />
-              <SummaryCard label="Çözüldü" value={summary.resolved} accent="text-primary-dark" />
+              <SummaryCard label="Çözüldü" value={summary.resolved} accent="text-success" />
             </dl>
 
             <div>
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-navy-800">Son Talepler</h2>
+                <h2 className="section-title">Son Talepler</h2>
                 {requests.length > 0 && (
-                  <Link to={ROUTES.myRequests} className="text-sm font-semibold text-primary hover:text-primary-dark">
+                  <Link to={ROUTES.myRequests} className="link text-sm">
                     Tümünü gör
                   </Link>
                 )}
@@ -100,7 +99,7 @@ function CitizenPanel() {
                     title="Henüz bir talebiniz yok"
                     description="Köyünüzdeki bir sorunu bildirmek için ilk talebinizi oluşturun."
                     action={
-                      <Link to={ROUTES.newRequest} className="btn bg-white text-primary-dark hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary-dark">
+                      <Link to={ROUTES.newRequest} className="btn btn-primary">
                         Yeni Talep Oluştur
                       </Link>
                     }

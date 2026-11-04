@@ -43,7 +43,7 @@ export function LoginPage() {
       footer={
         <>
           Hesabınız yok mu?{' '}
-          <Link to={ROUTES.register} className="font-semibold text-primary underline underline-offset-2 hover:text-primary-dark">
+          <Link to={ROUTES.register} className="link underline">
             Kayıt olun
           </Link>
         </>

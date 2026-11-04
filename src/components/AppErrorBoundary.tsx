@@ -9,7 +9,7 @@ export function ErrorFallback() {
       <div role="alert" className="card w-full max-w-md border-t-4 border-t-primary p-6 text-center sm:p-8">
         <p className="text-sm font-semibold text-primary">{APP_NAME}</p>
         <h1 className="mt-2 text-xl font-bold text-navy">Beklenmeyen bir sorun oluştu</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-navy-muted">
           Sayfa görüntülenirken bir hata oluştu. Sayfayı yenileyebilir veya ana sayfaya dönebilirsiniz.
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">

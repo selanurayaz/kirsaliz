@@ -94,7 +94,7 @@ export function UserAccessEditor({ user, departments, saving, error, onSave, onC
       )}
 
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-navy-800">
+        <label className="flex items-center gap-2 text-sm font-medium text-navy">
           <input
             type="checkbox"
             checked={isActive}

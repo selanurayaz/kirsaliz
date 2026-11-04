@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { Link, useParams } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { EmptyState } from '@/components/EmptyState'
@@ -42,7 +43,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
       <dt className="text-xs font-medium tracking-wide text-muted uppercase">{label}</dt>
-      <dd className="mt-0.5 text-sm break-words text-navy-900">{children}</dd>
+      <dd className="mt-0.5 text-sm break-words text-navy">{children}</dd>
     </div>
   )
 }
@@ -92,9 +93,9 @@ export function StaffRequestDetailPage() {
   const backLink = (
     <Link
       to={ROUTES.staffDashboard}
-      className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
+      className="back-link"
     >
-      ← Kurum Paneli
+      <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Kurum Paneli
     </Link>
   )
 
@@ -102,8 +103,8 @@ export function StaffRequestDetailPage() {
 
   if (state.kind === 'not-found') {
     return (
-      <section className="bg-page px-4 py-8 sm:py-12">
-        <div className="mx-auto max-w-3xl space-y-4">
+      <section className="page-section">
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 space-y-4">
           {backLink}
           <EmptyState
             title="Talep bulunamadı"
@@ -116,8 +117,8 @@ export function StaffRequestDetailPage() {
 
   if (state.kind === 'error') {
     return (
-      <section className="bg-page px-4 py-8 sm:py-12">
-        <div className="mx-auto max-w-3xl space-y-4">
+      <section className="page-section">
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 space-y-4">
           {backLink}
           <div className="card p-6">
             <StatusMessage status={{ type: 'error', message: state.message }} />
@@ -140,8 +141,8 @@ export function StaffRequestDetailPage() {
   const { request, history, attachments, imageUrls, imageError } = state
 
   return (
-    <section className="bg-page px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-3xl space-y-6">
+    <section className="page-section">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 space-y-6">
         {backLink}
 
         <StatusMessage status={flash} />
@@ -155,8 +156,8 @@ export function StaffRequestDetailPage() {
             </div>
           </div>
 
-          <h1 className="mt-3 text-2xl font-bold break-words text-navy-800">{request.title}</h1>
-          <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-700">{request.description}</p>
+          <h1 className="mt-3 text-2xl font-bold break-words text-navy">{request.title}</h1>
+          <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-navy-muted">{request.description}</p>
 
           <dl className="mt-6 grid gap-4 border-t border-line pt-6 sm:grid-cols-2">
             <Field label="Vatandaş">{request.citizen_name?.trim() || 'Belirtilmemiş'}</Field>

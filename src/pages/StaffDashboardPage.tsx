@@ -43,11 +43,11 @@ const DESCRIPTIONS = {
   field_personnel: 'Size atanan görevleri görüntüleyin ve ilerletin.',
 } as const
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
+function SummaryCard({ label, value }: { label: string; value: number | null }) {
   return (
-    <div className="card border-l-4 border-l-primary p-4">
-      <dt className="text-xs font-medium text-muted">{label}</dt>
-      <dd className="mt-1 text-3xl font-bold text-navy">{value}</dd>
+    <div className="stat">
+      <dt className="stat-label">{label}</dt>
+      <dd className="stat-value">{value ?? '—'}</dd>
     </div>
   )
 }
@@ -154,11 +154,11 @@ export function StaffDashboardPage() {
   }
 
   return (
-    <section className="bg-page px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-5xl space-y-6">
+    <section className="page-section">
+      <div className="page-container space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy-800">{TITLES[role]}</h1>
-          <p className="mt-1 text-sm text-muted">{DESCRIPTIONS[role]}</p>
+          <h1 className="page-title">{TITLES[role]}</h1>
+          <p className="page-subtitle">{DESCRIPTIONS[role]}</p>
         </div>
 
         {showOfficerWarning && (
@@ -173,10 +173,10 @@ export function StaffDashboardPage() {
         {summaryError ? (
           <StatusMessage status={{ type: 'error', message: summaryError }} />
         ) : (
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7" aria-label="Talep özeti">
-            <SummaryCard label="Toplam" value={summary?.total ?? 0} />
+          <dl className="stat-strip grid-cols-2 sm:grid-cols-4 lg:grid-cols-7" aria-label="Talep özeti">
+            <SummaryCard label="Toplam" value={summary?.total ?? null} />
             {SUMMARY_STATUSES.map((s) => (
-              <SummaryCard key={s} label={STATUS_LABELS[s]} value={summary?.counts[s] ?? 0} />
+              <SummaryCard key={s} label={STATUS_LABELS[s]} value={summary?.counts[s] ?? null} />
             ))}
           </dl>
         )}
@@ -186,7 +186,7 @@ export function StaffDashboardPage() {
           className="grid gap-3 card p-4 sm:grid-cols-2 lg:grid-cols-4"
         >
           <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
-            <label htmlFor="kurum-arama" className="block text-sm font-medium text-navy-800">
+            <label htmlFor="kurum-arama" className="field-label">
               Ara
             </label>
             <input
@@ -199,7 +199,7 @@ export function StaffDashboardPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="kurum-durum" className="block text-sm font-medium text-navy-800">
+            <label htmlFor="kurum-durum" className="field-label">
               Durum
             </label>
             <select
@@ -220,7 +220,7 @@ export function StaffDashboardPage() {
             </select>
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="kurum-aciliyet" className="block text-sm font-medium text-navy-800">
+            <label htmlFor="kurum-aciliyet" className="field-label">
               Aciliyet
             </label>
             <select
@@ -242,7 +242,7 @@ export function StaffDashboardPage() {
           </div>
           {role === 'admin' && (
             <div className="space-y-1.5">
-              <label htmlFor="kurum-birim" className="block text-sm font-medium text-navy-800">
+              <label htmlFor="kurum-birim" className="field-label">
                 Birim
               </label>
               <select

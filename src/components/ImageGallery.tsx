@@ -13,7 +13,7 @@ export function ImageGallery({ attachments, imageUrls, error }: ImageGalleryProp
 
   return (
     <section aria-labelledby="fotograflar" className="card p-5 sm:p-8">
-      <h2 id="fotograflar" className="text-lg font-semibold text-navy-800">
+      <h2 id="fotograflar" className="section-title">
         Fotoğraflar
       </h2>
       {error && (

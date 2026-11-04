@@ -92,7 +92,7 @@ export function RegisterPage() {
       footer={
         <>
           Zaten hesabınız var mı?{' '}
-          <Link to={ROUTES.login} className="font-semibold text-primary underline underline-offset-2 hover:text-primary-dark">
+          <Link to={ROUTES.login} className="link underline">
             Giriş yapın
           </Link>
         </>

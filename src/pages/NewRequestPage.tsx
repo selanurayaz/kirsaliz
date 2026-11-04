@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { FormField } from '@/components/FormField'
@@ -217,21 +218,21 @@ export function NewRequestPage() {
   const selectedCategory = categories.find((c) => c.id === categoryId)
 
   return (
-    <section className="bg-page px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-3xl">
+    <section className="page-section">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
         <Link
           to={ROUTES.myRequests}
-          className="text-sm font-medium text-slate-600 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
+          className="back-link"
         >
-          ← Taleplerim
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Taleplerim
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-navy-800">Yeni Talep Oluştur</h1>
-        <p className="mt-1 text-sm text-muted">
+        <h1 className="mt-2 page-title">Yeni Talep Oluştur</h1>
+        <p className="page-subtitle">
           Köyünüzdeki sorunu bildirin; talebiniz ilgili birime iletilir ve takip kodunuzla izleyebilirsiniz.
         </p>
 
         {referenceError ? (
-          <div className="mt-6 card p-6">
+          <div className="card card-body mt-6">
             <StatusMessage status={{ type: 'error', message: referenceError }} />
             <button
               type="button"
@@ -246,11 +247,12 @@ export function NewRequestPage() {
             onSubmit={handleSubmit}
             noValidate
             aria-busy={submitting}
-            className="mt-6 space-y-8 card p-5 sm:p-8"
+            className="mt-6 space-y-5"
           >
             {/* Konum */}
-            <fieldset className="space-y-4" disabled={submitting}>
-              <legend className="text-base font-semibold text-navy-800">1. Konum</legend>
+            <fieldset className="mx-0 min-w-0 border-0 p-0" disabled={submitting}>
+              <legend className="form-legend">1. Konum</legend>
+              <div className="card card-body min-w-0 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <SelectField
                   id="district"
@@ -296,17 +298,19 @@ export function NewRequestPage() {
                   ))}
                 </SelectField>
               </div>
+              </div>
             </fieldset>
 
             {/* Kategori */}
             <fieldset
               id="category"
               tabIndex={-1}
-              className="space-y-3 focus:outline-none"
+              className="mx-0 min-w-0 border-0 p-0 focus:outline-none"
               disabled={submitting}
               aria-describedby={errors.category ? 'category-error' : undefined}
             >
-              <legend className="text-base font-semibold text-navy-800">2. Talep kategorisi *</legend>
+              <legend className="form-legend">2. Talep kategorisi *</legend>
+              <div className="card card-body min-w-0 space-y-4">
               {categories.length === 0 ? (
                 <p className="text-sm text-muted">Şu anda seçilebilir kategori bulunmuyor.</p>
               ) : (
@@ -331,9 +335,9 @@ export function NewRequestPage() {
                           htmlFor={inputId}
                           className="choice-card"
                         >
-                          <span className="block text-sm font-semibold text-navy-800">{category.name}</span>
+                          <span className="block text-sm font-semibold text-navy">{category.name}</span>
                           {category.description && (
-                            <span className="mt-0.5 block text-xs text-muted">{category.description}</span>
+                            <span className="mt-0.5 block text-sm text-muted">{category.description}</span>
                           )}
                         </label>
                       </div>
@@ -342,18 +346,20 @@ export function NewRequestPage() {
                 </div>
               )}
               {selectedCategory && (
-                <p className="text-xs text-muted">Seçilen kategoriye göre talebiniz ilgili birime yönlendirilir.</p>
+                <p className="field-hint">Seçilen kategoriye göre talebiniz ilgili birime yönlendirilir.</p>
               )}
               {errors.category && (
-                <p id="category-error" className="text-xs text-destructive">
+                <p id="category-error" className="field-error">
                   {errors.category}
                 </p>
               )}
+              </div>
             </fieldset>
 
             {/* Ayrıntılar */}
-            <fieldset className="space-y-4" disabled={submitting}>
-              <legend className="text-base font-semibold text-navy-800">3. Talep ayrıntıları</legend>
+            <fieldset className="mx-0 min-w-0 border-0 p-0" disabled={submitting}>
+              <legend className="form-legend">3. Talep ayrıntıları</legend>
+              <div className="card card-body min-w-0 space-y-4">
               <div className="space-y-1.5">
                 <FormField
                   id="title"
@@ -370,7 +376,7 @@ export function NewRequestPage() {
                   required
                 />
                 {errors.title && (
-                  <p id="title-error" className="text-xs text-destructive">
+                  <p id="title-error" className="field-error">
                     {errors.title}
                   </p>
                 )}
@@ -404,10 +410,10 @@ export function NewRequestPage() {
               />
 
               <div role="radiogroup" aria-labelledby="urgency-label" className="space-y-2">
-                <span id="urgency-label" className="block text-sm font-medium text-navy-800">
+                <span id="urgency-label" className="field-label">
                   Aciliyet düzeyi
                 </span>
-                <p className="text-xs text-muted">
+                <p className="field-hint">
                   Bu, sizin kendi değerlendirmenizdir; ilgili birim talebi kendi önceliklendirmesine göre ele alır.
                 </p>
                 <div className="grid gap-2 sm:grid-cols-3">
@@ -426,19 +432,21 @@ export function NewRequestPage() {
                         htmlFor={`urgency-${value}`}
                         className="choice-card text-sm"
                       >
-                        <span className="block font-semibold text-navy-800">{URGENCY_LABELS[value]}</span>
-                        <span className="block text-xs text-muted">{URGENCY_HINTS[value]}</span>
+                        <span className="block font-semibold text-navy">{URGENCY_LABELS[value]}</span>
+                        <span className="block text-sm text-muted">{URGENCY_HINTS[value]}</span>
                       </label>
                     </div>
                   ))}
                 </div>
               </div>
+              </div>
             </fieldset>
 
             {/* Konum bilgisi */}
-            <fieldset className="space-y-3" disabled={submitting}>
-              <legend className="text-base font-semibold text-navy-800">4. Cihaz konumu (isteğe bağlı)</legend>
-              <p className="text-xs text-muted">
+            <fieldset className="mx-0 min-w-0 border-0 p-0" disabled={submitting}>
+              <legend className="form-legend">4. Cihaz konumu (isteğe bağlı)</legend>
+              <div className="card card-body min-w-0 space-y-4">
+              <p className="field-hint">
                 Konumunuz yalnızca aşağıdaki düğmeye bastığınızda ve tarayıcı izin verirse alınır.
               </p>
               <div className="flex flex-wrap items-center gap-2">
@@ -466,16 +474,17 @@ export function NewRequestPage() {
                 </p>
               )}
               {locationMessage && (
-                <p role="alert" className="rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
+                <p role="alert" className="alert alert-warning">
                   {locationMessage}
                 </p>
               )}
+              </div>
             </fieldset>
 
             {/* Fotoğraflar */}
             <ImageUploader files={files} onChange={setFiles} disabled={submitting} />
 
-            <div className="space-y-3 border-t border-line pt-6">
+            <div className="card card-body space-y-3">
               <StatusMessage status={status} />
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <Link
@@ -487,7 +496,7 @@ export function NewRequestPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="btn btn-primary"
+                  className="btn btn-primary btn-lg"
                 >
                   {submitting ? (files.length > 0 ? 'Talep ve fotoğraflar gönderiliyor…' : 'Talep gönderiliyor…') : 'Talebi Gönder'}
                 </button>

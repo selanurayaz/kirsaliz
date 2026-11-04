@@ -5,19 +5,19 @@ import type { ServiceRequestHistory } from '@/types/database'
 /** Talep durum geçmişi — dikey zaman çizelgesi. */
 export function StatusTimeline({ history }: { history: ServiceRequestHistory[] }) {
   return (
-    <section aria-labelledby="gecmis" className="card p-5 sm:p-8">
-      <h2 id="gecmis" className="text-lg font-semibold text-navy-800">
+    <section aria-labelledby="gecmis" className="card card-body">
+      <h2 id="gecmis" className="section-title">
         Durum Geçmişi
       </h2>
       {history.length === 0 ? (
         <p className="mt-3 text-sm text-muted">Henüz geçmiş kaydı yok.</p>
       ) : (
-        <ol className="mt-4 border-l-2 border-primary-border">
+        <ol className="timeline mt-5">
           {history.map((entry, index) => (
-            <li key={entry.id} className="relative pb-6 pl-6 last:pb-0">
+            <li key={entry.id} className="timeline-item">
               <span
                 aria-hidden="true"
-                className={`absolute top-1 -left-[7px] h-3 w-3 rounded-full border-2 border-white ring-2 ${
+                className={`timeline-dot ${
                   entry.status === 'rejected' || entry.status === 'cancelled'
                     ? 'bg-destructive ring-destructive-border'
                     : index === history.length - 1
@@ -27,7 +27,7 @@ export function StatusTimeline({ history }: { history: ServiceRequestHistory[] }
               />
               <p className="text-sm font-semibold text-navy">{STATUS_LABELS[entry.status]}</p>
               <p className="text-xs text-muted">{formatDateTime(entry.created_at)}</p>
-              {entry.note && <p className="mt-1 text-sm text-slate-600">{entry.note}</p>}
+              {entry.note && <p className="mt-1 text-sm text-navy-muted">{entry.note}</p>}
             </li>
           ))}
         </ol>
