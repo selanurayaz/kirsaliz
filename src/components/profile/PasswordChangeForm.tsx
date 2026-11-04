@@ -54,13 +54,13 @@ export function PasswordChangeForm({ email }: { email: string }) {
       noValidate
       aria-busy={saving}
       aria-labelledby="sifre-baslik"
-      className="card space-y-4 p-5 sm:p-6"
+      className="card card-body space-y-4"
     >
       <div>
-        <h2 id="sifre-baslik" className="text-lg font-bold text-navy-800">
+        <h2 id="sifre-baslik" className="section-title">
           Şifre Değiştir
         </h2>
-        <p className="mt-1 text-xs text-muted">Güvenliğiniz için önce mevcut şifrenizi doğrulamanız gerekir.</p>
+        <p className="field-hint mt-1">Güvenliğiniz için önce mevcut şifrenizi doğrulamanız gerekir.</p>
       </div>
 
       <FormField
@@ -100,7 +100,7 @@ export function PasswordChangeForm({ email }: { email: string }) {
 
       <StatusMessage status={status} />
 
-      <button type="submit" disabled={saving} className="btn btn-primary w-full sm:w-auto">
+      <button type="submit" disabled={saving} className="btn btn-primary w-full sm:w-auto sm:min-w-48">
         {saving ? 'Şifre değiştiriliyor…' : 'Şifreyi Değiştir'}
       </button>
     </form>

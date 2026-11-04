@@ -121,11 +121,11 @@ export function AdminUsersPage() {
   }
 
   return (
-    <section className="bg-page px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-5xl space-y-6">
+    <section className="page-section">
+      <div className="page-container space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy-800">Kullanıcı Yönetimi</h1>
-          <p className="mt-1 text-sm text-muted">
+          <h1 className="page-title">Kullanıcı Yönetimi</h1>
+          <p className="page-subtitle">
             Kayıtlı kullanıcıların rol, birim ve hesap durumunu yönetin. Yeni personel önce normal kayıt olur, ardından
             buradan yetkilendirilir.
           </p>
@@ -150,7 +150,7 @@ export function AdminUsersPage() {
           <>
             <div className="grid gap-3 card p-4 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <label htmlFor="kullanici-arama" className="block text-sm font-medium text-navy-800">
+                <label htmlFor="kullanici-arama" className="field-label">
                   Ad veya e-posta ara
                 </label>
                 <input
@@ -162,7 +162,7 @@ export function AdminUsersPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="kullanici-rol-filtre" className="block text-sm font-medium text-navy-800">
+                <label htmlFor="kullanici-rol-filtre" className="field-label">
                   Rol
                 </label>
                 <select
@@ -180,7 +180,7 @@ export function AdminUsersPage() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="kullanici-durum-filtre" className="block text-sm font-medium text-navy-800">
+                <label htmlFor="kullanici-durum-filtre" className="field-label">
                   Hesap durumu
                 </label>
                 <select
@@ -210,18 +210,18 @@ export function AdminUsersPage() {
                     <li key={u.id} className="card p-4 sm:p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="font-semibold break-words text-navy-900">
+                          <p className="font-semibold break-words text-navy">
                             {u.full_name?.trim() || 'Adsız kullanıcı'}
                             {isSelf && <span className="ml-2 text-xs font-medium text-muted">(Siz)</span>}
                           </p>
-                          <p className="text-sm break-all text-slate-600">{u.email}</p>
+                          <p className="text-sm break-all text-navy-muted">{u.email}</p>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           <RoleBadge role={u.role} />
                           <ActiveBadge active={u.is_active} />
                         </div>
                       </div>
-                      <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm text-slate-600 sm:grid-cols-3">
+                      <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm text-navy-muted sm:grid-cols-3">
                         <div>
                           <dt className="text-xs text-muted">Birim</dt>
                           <dd>{u.department_name ?? '—'}</dd>
@@ -257,12 +257,12 @@ export function AdminUsersPage() {
 
             {history.length > 0 && (
               <section aria-labelledby="erisim-gecmisi" className="card p-5">
-                <h2 id="erisim-gecmisi" className="text-lg font-semibold text-navy-800">
+                <h2 id="erisim-gecmisi" className="section-title">
                   Son Erişim Değişiklikleri
                 </h2>
                 <ul className="mt-3 divide-y divide-line text-sm">
                   {history.map((h) => (
-                    <li key={h.id} className="py-2 text-slate-700">
+                    <li key={h.id} className="py-2 text-navy-muted">
                       <span className="font-medium">{userLabel(h.target_user_id)}</span>:{' '}
                       {ROLE_LABELS[h.old_role]} → {ROLE_LABELS[h.new_role]}
                       {h.new_department_id && ` (${departmentNames.get(h.new_department_id) ?? 'Birim'})`}

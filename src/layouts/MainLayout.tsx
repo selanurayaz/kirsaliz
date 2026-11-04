@@ -10,7 +10,7 @@ export function MainLayout() {
     <div className="flex min-h-screen flex-col">
       <ScrollToHash />
       <Navbar />
-      <main className="flex-1">
+      <main className="flex flex-1 flex-col">
         <Suspense fallback={<FullPageSpinner />}>
           <Outlet />
         </Suspense>

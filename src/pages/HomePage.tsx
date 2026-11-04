@@ -1,186 +1,201 @@
 import { Link } from 'react-router'
+import { ArrowRight, CheckCircle2, MapPinned, Route as RouteIcon, Wrench } from 'lucide-react'
+import { ElazigMapVisual } from '@/components/geo/ElazigMapVisual'
+import { RiverScrollStory } from '@/components/geo/RiverScrollStory'
+import { WorkflowRiverStop } from '@/components/geo/WorkflowRiverStop'
+import { ELAZIG_GEO_ATTRIBUTION } from '@/components/geo/elazig-geo'
 import { ROUTES } from '@/lib/constants'
 
-const features = [
-  {
-    title: 'Konumlu Bildirim',
-    description: 'Yol, içme suyu, kanalizasyon ve benzeri altyapı sorunlarını konum bilgisiyle tek noktadan bildirin.',
-    icon: 'M12 2C7.6 2 4 5.5 4 9.9 4 15.8 12 22 12 22s8-6.2 8-12.1C20 5.5 16.4 2 12 2zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z',
-  },
-  {
-    title: 'Şeffaf Süreç Takibi',
-    description: 'Bildiriminizin hangi aşamada olduğunu, hangi birime yönlendirildiğini anlık olarak izleyin.',
-    icon: 'M9 12l2 2 4-4m5 2a8 8 0 1 1-16 0 8 8 0 0 1 16 0z',
-  },
-  {
-    title: 'Karar Desteği',
-    description: 'Aciliyet ve etkilenen kişi sayısına göre açıklanabilir önceliklendirme ile kaynaklar doğru yere yönlenir.',
-    icon: 'M4 19h16M7 16V9m5 7V5m5 11v-4',
-  },
-]
+const values = [
+  ['Konumlu bildirim', 'Her talep bir ilçe ve köye bağlanır; isterseniz cihaz konumunuz da eklenir.'],
+  ['Şeffaf durum takibi', 'Talebiniz alındı, incelemede, görevlendirildi ya da çözüldü: aşamayı her an görürsünüz.'],
+  ['Doğru birime yönlendirme', 'Her talep kategorisi sorumlu birime bağlıdır; talep o birimin yetkilisine ulaşır.'],
+  ['Saha personeli akışı', 'Birim yetkilisi talebi saha personeline atar; personel işe başlar ve sonucu kaydeder.'],
+  ['Kayıtlı durum geçmişi', 'Her geçiş tarih ve notuyla saklanır; talep sahibi geçmişi sonradan da görebilir.'],
+] as const
 
-const steps = [
-  { title: 'Bildirin', description: 'Vatandaş; kategori, açıklama, konum ve isteğe bağlı fotoğrafla sorunu bildirir.' },
-  { title: 'Değerlendirilsin', description: 'Kurum personeli bildirimi inceler, benzer bildirimlerle ilişkilendirir ve önceliklendirir.' },
-  { title: 'Müdahale Edilsin', description: 'İlgili saha ekibi görevlendirilir ve müdahale sonucu sisteme kaydedilir.' },
-  { title: 'Takip Edin', description: 'Vatandaş süreci izler, yöneticiler genel durumu analiz eder.' },
-]
+const handoffs = [
+  {
+    role: 'Vatandaş',
+    does: 'Sorunu bildirir, talebini ve geçmişini izler; gerekirse talebini iptal eder.',
+    next: 'Talep, kategorisine bağlı birime düşer.',
+  },
+  {
+    role: 'Birim yetkilisi',
+    does: 'Biriminin taleplerini inceler; kabul eder veya gerekçesiyle reddeder.',
+    next: 'Kabul edilen talebi saha personeline atar.',
+  },
+  {
+    role: 'Saha personeli',
+    does: 'Kendisine atanan işi başlatır ve çözüm notunu kaydeder.',
+    next: 'Sonuç, vatandaşın durum geçmişinde görünür.',
+  },
+  {
+    role: 'Yönetici',
+    does: 'Kullanıcı rollerini ve birim atamalarını yönetir; hesapları etkinleştirir veya pasifleştirir.',
+    next: null,
+  },
+] as const
 
-const roles = [
-  { title: 'Vatandaş', description: 'Sorun bildirimi oluşturur ve süreci takip eder.' },
-  { title: 'Kurum Personeli', description: 'Bildirimleri inceler, sınıflandırır ve ilgili birime yönlendirir.' },
-  { title: 'Saha Personeli', description: 'Atanan görevleri görüntüler ve müdahale sonucunu kaydeder.' },
-  { title: 'Yönetici', description: 'Genel durumu, istatistikleri ve birim performanslarını izler.' },
-]
+/** Bölüm girişi: geniş ekranda nehrin sol yakasında, sağa yaslı; nehir metnin üzerinden geçmez. */
+function SectionIntro({ title, children }: { title: string; children: string }) {
+  return (
+    <div className="mb-10 max-md:pl-10 md:grid md:grid-cols-[1fr_3rem_1fr] md:gap-x-8">
+      <div className="max-w-xl md:max-w-md md:justify-self-end md:text-right">
+        <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
+        <p className="mt-4 text-base text-navy-muted">{children}</p>
+      </div>
+    </div>
+  )
+}
+
+/** Yalnızca küçük ekranda nehrin yanındaki metni sağa iter (nehir sol kenarda aktığı için). */
+const CLEAR_RIVER = 'max-md:pl-10'
 
 export function HomePage() {
   return (
     <>
-      {/* Hero */}
-      <section className="border-b-4 border-navy bg-primary-dark text-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2">
-          <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-primary-soft uppercase ring-1 ring-white/20 ring-inset">
-              Kırsal Hizmet Platformu
-            </span>
-            <h1 className="text-3xl leading-tight font-bold sm:text-4xl lg:text-5xl">
-              Köyünüzdeki sorunları <span className="text-primary-border">tek tıkla</span> bildirin, süreci şeffafça takip edin.
+      {/* Hero: tek baskın görsel — Elazığ ve Fırat; nehir haritadan sayfaya akar */}
+      <section className="overflow-hidden bg-primary-dark text-white">
+        <div className="page-container grid items-center gap-8 pt-12 pb-14 sm:pt-16 lg:grid-cols-[5fr_6fr] lg:gap-6 lg:pt-20 lg:pb-16">
+          <div className="max-w-xl">
+            <h1 className="text-[2rem] leading-[1.1] font-extrabold tracking-tight !text-white sm:text-5xl">
+              Köyünüzdeki sorun, doğru birime ulaşsın.
             </h1>
-            <p className="max-w-xl text-base text-primary-soft sm:text-lg">
-              KırsalİZ; kırsal bölgelerdeki altyapı sorunlarının vatandaşlar tarafından bildirilmesini, kurumlar
-              tarafından değerlendirilmesini ve saha ekiplerine yönlendirilmesini sağlayan konum tabanlı bir hizmet ve
-              karar destek platformudur.
+            <p className="mt-5 text-lg text-primary-soft">
+              Elazığ’daki köy ve mahallelerde yol, su ve altyapı sorunlarını konumuyla bildirin; talebinizin her aşamasını
+              takip edin.
             </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                to={ROUTES.register}
-                className="btn bg-white px-6 py-3 text-primary-dark shadow-sm hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary-dark"
-              >
-                Hemen Kayıt Ol
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <Link to={ROUTES.register} className="btn btn-lg btn-on-dark">
+                Talep oluşturmak için kayıt olun <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
               <Link
                 to={ROUTES.login}
-                className="btn border-white/40 px-6 py-3 text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-primary-dark"
+                className="rounded-sm text-base font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white focus-visible:outline-white"
               >
-                Giriş Yap
+                Hesabım var, giriş yap
               </Link>
             </div>
           </div>
 
-          <div className="hidden lg:block">
-            <div className="rounded-xl border border-white/15 bg-white/5 p-6 shadow-xl">
-              <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm font-semibold text-primary-soft">Örnek Bildirim</p>
-                <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white ring-1 ring-white/20 ring-inset">
-                  İnceleniyor
-                </span>
-              </div>
-              <dl className="space-y-3 text-sm">
-                {[
-                  ['Kategori', 'İçme Suyu'],
-                  ['Konum', 'Örnek Köyü, Merkez Mah.'],
-                  ['Etkilenen Kişi', '~120'],
-                  ['Öncelik', 'Yüksek'],
-                ].map(([k, v]) => (
-                  <div key={k} className="flex justify-between border-b border-white/15 pb-2 last:border-0">
-                    <dt className="text-primary-border">{k}</dt>
-                    <dd className="font-medium text-white">{v}</dd>
-                  </div>
-                ))}
-              </dl>
+          <div className="ml-auto w-full max-w-sm sm:max-w-md lg:max-w-none lg:translate-x-6">
+            <ElazigMapVisual />
+          </div>
+        </div>
+      </section>
+
+      <RiverScrollStory>
+        {/* Değer: kartsız, editoryal liste; nehir iki sütunun arasından geçer */}
+        <section className="bg-white py-14 sm:py-20">
+          <div className="page-container grid gap-8 md:grid-cols-[1fr_3rem_1fr] md:gap-x-8">
+            <div className={`${CLEAR_RIVER} md:max-w-md md:justify-self-end md:self-start md:pl-0 md:text-right md:sticky md:top-24`}>
+              <h2 className="text-3xl font-bold tracking-tight">Bildirimden çözüme kadar kayıt altında</h2>
+              <p className="mt-4 text-base text-navy-muted">
+                KırsalİZ, kırsaldaki hizmet taleplerinin kaybolmamasını sağlar: kim, nerede, neyi bildirdi ve talep şimdi
+                hangi aşamada — hepsi tek yerde.
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Özellikler */}
-      <section className="bg-white py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mx-auto mb-12 max-w-2xl text-center">
-            <h2 className="text-2xl font-bold text-navy-800 sm:text-3xl">Neden KırsalİZ?</h2>
-            <p className="mt-3 text-slate-600">
-              Vatandaş, kurum ve saha ekipleri arasındaki iletişimi güçlendiren, veriye dayalı bir hizmet yönetimi.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {features.map((f) => (
-              <div key={f.title} className="card p-6">
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary-soft text-primary ring-1 ring-primary-border">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-6 w-6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d={f.icon} />
-                  </svg>
+            <dl className={`${CLEAR_RIVER} divide-y divide-line border-y border-line md:col-start-3 md:pl-0`}>
+              {values.map(([title, text]) => (
+                <div key={title} className="py-4">
+                  <dt className="font-semibold text-primary">{title}</dt>
+                  <dd className="mt-1 text-base text-navy-muted">{text}</dd>
                 </div>
-                <h3 className="text-lg font-semibold text-navy-800">{f.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{f.description}</p>
-              </div>
-            ))}
+              ))}
+            </dl>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Nasıl Çalışır */}
-      <section id="nasil-calisir" className="bg-page py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="mb-12 text-center text-2xl font-bold text-navy-800 sm:text-3xl">Nasıl Çalışır?</h2>
-          <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s, i) => (
-              <li key={s.title} className="card border-t-4 border-t-primary p-6">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-                  {i + 1}
-                </span>
-                <h3 className="mt-4 font-semibold text-navy-800">{s.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{s.description}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+        {/* Nehir iş akışı */}
+        <section id="nasil-calisir" className="bg-page py-14 sm:py-20">
+          <div className="page-container">
+            <SectionIntro title="Bir talep nehir gibi akar">
+              Bildirimden çözüme kadar dört durak. Her durak uygulamadaki gerçek bir aşamadır.
+            </SectionIntro>
 
-      {/* Hakkında / Roller */}
-      <section id="hakkinda" className="bg-white py-16 sm:py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-2">
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-navy-800 sm:text-3xl">Hakkında</h2>
-            <p className="text-slate-600">
-              KırsalİZ, kırsal bölgelerde yaşanan altyapı sorunlarında hizmet taleplerinin konum, aciliyet ve etkilenen
-              kişi sayısına göre daha düzenli yönetilmesini amaçlar. Bildirimler tek merkezde toplanır, müdahale süreci
-              takip edilebilir hâle gelir ve yöneticilere veriye dayalı karar desteği sunulur.
+            <ol aria-label="Talep akışının dört durağı" className="relative">
+              <WorkflowRiverStop title="Sorunu Bildir" actor="Vatandaş" icon={MapPinned} side="left">
+                <p>İlçe ve köyü seçin, kategoriyi belirleyin, sorunu anlatın; dilerseniz konum ve fotoğraf ekleyin.</p>
+                <p>Talebiniz bir takip koduyla kaydedilir.</p>
+              </WorkflowRiverStop>
+              <WorkflowRiverStop title="İlgili Birime Yönlendir" actor="Birim yetkilisi" icon={RouteIcon} side="right">
+                <p>Talep, kategorisine bağlı birimin önüne düşer. Yetkili talebi inceler, kabul eder ya da gerekçesiyle reddeder.</p>
+              </WorkflowRiverStop>
+              <WorkflowRiverStop title="Sahada Müdahale Et" actor="Saha personeli" icon={Wrench} side="left">
+                <p>Kabul edilen talep birimdeki bir saha personeline atanır. Personel işi başlatır ve ilerlemeyi not düşer.</p>
+              </WorkflowRiverStop>
+              <WorkflowRiverStop title="Çözümü Takip Et" actor="Vatandaş" icon={CheckCircle2} side="right">
+                <p>Çözüm kaydedildiğinde talep kapanır. Durum geçmişinde her aşamayı tarihi ve notuyla görebilirsiniz.</p>
+              </WorkflowRiverStop>
+            </ol>
+          </div>
+        </section>
+
+        {/* Roller: nehrin iki yakasında devir zinciri */}
+        <section id="hakkinda" className="bg-white pt-14 pb-16 sm:pt-20 sm:pb-24">
+          <div className="page-container">
+            <SectionIntro title="Talep elden ele ilerler">
+              Her rol yalnızca kendi işini görür ve talebi bir sonraki role devreder. Herkes yalnızca yetkisi olan bilgilere erişir.
+            </SectionIntro>
+
+            <ol aria-label="Roller ve devir sırası">
+              {handoffs.map((h, i) => (
+                <li
+                  key={h.role}
+                  className="grid grid-cols-[2.5rem_1fr] gap-x-4 pb-8 last:pb-0 md:grid-cols-[1fr_3rem_1fr] md:gap-x-8"
+                >
+                  <span aria-hidden="true" className="relative z-10 flex h-10 justify-center pt-2 md:col-start-2">
+                    <span
+                      className={`h-4 w-4 rounded-full border-4 border-white ring-2 ${
+                        h.next ? 'bg-primary ring-primary' : 'bg-navy ring-navy'
+                      }`}
+                    />
+                  </span>
+                  <div
+                    className={`col-start-2 min-w-0 md:row-start-1 ${
+                      i % 2 === 0 ? 'md:col-start-1 md:text-right' : 'md:col-start-3'
+                    }`}
+                  >
+                    <h3 className="text-xl font-bold text-navy">{h.role}</h3>
+                    <p className="mt-1 max-w-md text-base text-navy-muted md:inline-block">{h.does}</p>
+                    {h.next && (
+                      <p className={`mt-2 flex items-start gap-2 text-base font-medium text-navy ${i % 2 === 0 ? 'md:justify-end' : ''}`}>
+                        <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-primary md:hidden" aria-hidden="true" />
+                        <span className="max-w-md">{h.next}</span>
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      </RiverScrollStory>
+
+      {/* Kapanış: nehir çözüme ulaşır */}
+      <section className="relative bg-primary-dark text-white">
+        <span
+          aria-hidden="true"
+          className="absolute top-0 left-9 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-water text-white md:left-1/2"
+        >
+          <CheckCircle2 className="h-6 w-6" />
+        </span>
+        <div className="page-container flex flex-col gap-6 pt-16 pb-8 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-xl max-md:pl-10">
+            <h2 className="text-3xl font-bold tracking-tight !text-white">Sorunu bildirin, yolculuğunu izleyin.</h2>
+            <p className="mt-3 text-lg text-primary-soft">
+              Hesap oluşturun, ilk talebinizi iletin ve çözüme kadar her adımı görün.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {roles.map((r) => (
-              <div key={r.title} className="rounded-lg border-l-4 border-primary bg-primary-soft p-4">
-                <h3 className="font-semibold text-navy-800">{r.title}</h3>
-                <p className="mt-1 text-sm text-slate-600">{r.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-primary">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-12 text-center sm:px-6 md:flex-row md:justify-between md:text-left">
-          <div>
-            <h2 className="text-xl font-bold text-white sm:text-2xl">Köyünüz için bir adım atın.</h2>
-            <p className="mt-1 text-primary-soft">Ücretsiz hesap oluşturun ve ilk bildiriminizi yapın.</p>
-          </div>
-          <Link
-            to={ROUTES.register}
-            className="btn bg-white px-6 py-3 text-primary-dark shadow-sm hover:bg-primary-soft focus-visible:ring-white focus-visible:ring-offset-primary"
-          >
-            Kayıt Ol
+          <Link to={ROUTES.register} className="btn btn-lg btn-on-dark shrink-0 max-md:ml-10">
+            Kayıt Ol <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
+        <p className="page-container pb-5 text-sm text-primary-border">
+          Elazığ sınırı: {ELAZIG_GEO_ATTRIBUTION}. KırsalİZ bağımsız bir yazılım çalışmasıdır ve bir kamu kurumunun resmî
+          hizmeti değildir.
+        </p>
       </section>
     </>
   )

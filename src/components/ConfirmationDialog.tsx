@@ -63,16 +63,16 @@ export function ConfirmationDialog({
         event.preventDefault()
         if (!busy) onCancel()
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-xl border border-line bg-white p-0 shadow-xl backdrop:bg-navy-950/60"
+      className="dialog-panel m-auto"
     >
       {open && (
         <form onSubmit={handleSubmit} className="space-y-4 p-5 sm:p-6">
           <div>
-            <h2 id={titleId} className="text-lg font-semibold text-navy">
+            <h2 id={titleId} className="text-lg font-bold text-navy">
               {title}
             </h2>
             {description && (
-              <p id={descriptionId} className="mt-1 text-sm text-slate-600">
+              <p id={descriptionId} className="mt-1 text-sm text-navy-muted">
                 {description}
               </p>
             )}

@@ -121,3 +121,7 @@ Yazılım Mühendisliği Öğrencisi
 ## Lisans
 
 Bu proje [MIT Lisansı](LICENSE) kapsamında sunulmaktadır.
+
+## Harita verisi ve atıf
+
+Ana sayfadaki Elazığ il sınırı, OpenStreetMap (ilişki 223443) verisinden sadeleştirilmiş yerel bir SVG yoludur. Veri © OpenStreetMap katkıcıları, ODbL 1.0 (https://www.openstreetmap.org/copyright). Fırat–Keban güzergâhı stilize bir çizgidir; idari/navigasyon haritası değildir. Çalışma zamanında harita servisine istek yapılmaz. Bkz. `src/components/geo/elazig-geo.ts`.

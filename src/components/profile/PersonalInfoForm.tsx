@@ -122,13 +122,13 @@ export function PersonalInfoForm({ details, onSaved }: PersonalInfoFormProps) {
       noValidate
       aria-busy={saving}
       aria-labelledby="kisisel-baslik"
-      className="card space-y-4 p-5 sm:p-6"
+      className="card card-body space-y-4"
     >
       <div>
-        <h2 id="kisisel-baslik" className="text-lg font-bold text-navy-800">
+        <h2 id="kisisel-baslik" className="section-title">
           Kişisel Bilgiler
         </h2>
-        <p className="mt-1 text-xs text-muted">* ile işaretli alanlar zorunludur.</p>
+        <p className="field-hint mt-1">* ile işaretli alanlar zorunludur.</p>
       </div>
 
       <FormField
@@ -145,7 +145,7 @@ export function PersonalInfoForm({ details, onSaved }: PersonalInfoFormProps) {
         aria-describedby={fieldErrors.fullName ? 'fullName-error' : undefined}
       />
       {fieldErrors.fullName && (
-        <p id="fullName-error" className="-mt-2 text-xs text-destructive">
+        <p id="fullName-error" className="field-error -mt-2">
           {fieldErrors.fullName}
         </p>
       )}
@@ -164,7 +164,7 @@ export function PersonalInfoForm({ details, onSaved }: PersonalInfoFormProps) {
         aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
       />
       {fieldErrors.phone && (
-        <p id="phone-error" className="-mt-2 text-xs text-destructive">
+        <p id="phone-error" className="field-error -mt-2">
           {fieldErrors.phone}
         </p>
       )}
@@ -213,7 +213,7 @@ export function PersonalInfoForm({ details, onSaved }: PersonalInfoFormProps) {
 
       <StatusMessage status={status} />
 
-      <button type="submit" disabled={saving} className="btn btn-primary w-full sm:w-auto">
+      <button type="submit" disabled={saving} className="btn btn-primary w-full sm:w-auto sm:min-w-48">
         {saving ? 'Kaydediliyor…' : 'Değişiklikleri Kaydet'}
       </button>
     </form>

@@ -19,16 +19,16 @@ export function TextAreaField({ id, label, error, hint, className = '', ...props
         name={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
-        className={`${FIELD_CLASS} ${error ? 'border-destructive' : ''} ${className}`}
+        className={`${FIELD_CLASS} ${className}`}
         {...props}
       />
       {hint && !error && (
-        <p id={`${id}-hint`} className="text-xs text-muted">
+        <p id={`${id}-hint`} className="field-hint">
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="text-xs text-destructive">
+        <p id={`${id}-error`} className="field-error">
           {error}
         </p>
       )}
