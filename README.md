@@ -73,26 +73,28 @@ Durumlar `service_request_status` enum'undan, geçiş kuralları `004_staff_work
 ```mermaid
 stateDiagram-v2
     state "Alındı" as submitted
-    state "İnceleniyor" as under_review
+    state "İnceleniyor" as underReview
     state "Atandı" as assigned
-    state "İşlemde" as in_progress
+    state "İşlemde" as inProgress
     state "Çözüldü" as resolved
     state "Reddedildi" as rejected
     state "İptal Edildi" as cancelled
 
     [*] --> submitted
-    submitted --> under_review
-    under_review --> assigned
-    assigned --> in_progress
-    in_progress --> resolved
-    in_progress --> assigned : yeniden atama
-    submitted --> cancelled : vatandaş
-    under_review --> cancelled : vatandaş
+    submitted --> underReview
+    underReview --> assigned
+    assigned --> inProgress
+    inProgress --> resolved
+    inProgress --> assigned: Yeniden atama
+    submitted --> cancelled: Vatandaş
+    underReview --> cancelled: Vatandaş
     submitted --> rejected
-    under_review --> rejected
+    underReview --> rejected
     assigned --> rejected
-    in_progress --> rejected
+    inProgress --> rejected
     resolved --> [*]
+    rejected --> [*]
+    cancelled --> [*]
 ```
 
 - `İptal Edildi` yalnızca talep sahibi tarafından ve yalnızca `Alındı` / `İnceleniyor` aşamalarında verilebilir.
@@ -121,27 +123,25 @@ stateDiagram-v2
 
 ```mermaid
 flowchart LR
-    subgraph Client["Tarayıcı"]
-        App["React / Vite istemcisi"]
-    end
-    subgraph Supabase["Supabase"]
-        Auth["Auth"]
-        DB[("PostgreSQL<br/>RLS + RPC")]
-        Storage["Storage<br/>(özel bucket)"]
-    end
+    App["React ve Vite istemcisi"]
+    Auth["Supabase Auth"]
+    DB[("PostgreSQL")]
+    Storage["Supabase Storage"]
+
     App --> Auth
     App --> DB
     App --> Storage
-    Auth -. "auth.uid()" .-> DB
-    DB -. "erişim kuralları" .-> Storage
+    Auth -.->|auth.uid| DB
+    DB -.->|RLS ve erişim kuralları| Storage
 ```
 
 Geliştirme ve yayın tarafı ayrıdır:
 
 ```mermaid
 flowchart LR
-    Dev["GitHub deposu"] --> CI["GitHub Actions<br/>lint, typecheck, test, build"]
-    Dev -- "main dalı" --> Vercel["Vercel<br/>üretim yayını"]
+    Repo["GitHub deposu"] --> CI["GitHub Actions"]
+    CI --> Checks["Lint, typecheck, test ve build"]
+    Repo -->|main dalı| Vercel["Vercel üretim yayını"]
 ```
 
 ## Proje Yapısı
